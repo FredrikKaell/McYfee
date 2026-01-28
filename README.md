@@ -144,10 +144,11 @@ mcyfee/
 
 This project is developed by a team of four:
 
-Fredrik Käll – Scrum Master & Developer
-Emil – Tech Lead & Developer
-Youssef – Developer
-Elvira – Developer
+* Fredrik – Scrum Master & Developer
+* Emil – Tech Lead & Developer
+* Youssef – Developer
+* Elvira – Developer
+
 Contributions from the core team are welcome. External contribution guidelines will be added later.
 
 ## Acknowledgments

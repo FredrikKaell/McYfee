@@ -23,12 +23,12 @@ class RunMultiple:
         start_threads():
             Starts all threads for specified functions.
     """
-    
+
     def __init__(self, main_func : Callable, *args : Callable):
         self.main_func = main_func
         self.funcs = args
         self.threads = []
-        
+
     def start_threads(self):
         """
         Starts all threads for specified functions.
@@ -39,7 +39,7 @@ class RunMultiple:
             thread.start()
         except (TypeError, RuntimeError) as e:
             print(f"Error setting main thread: {e}")
-            
+
         for func in self.funcs:
             try:
                 thread = threading.Thread(target=func, daemon=True)

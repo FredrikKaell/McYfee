@@ -18,7 +18,9 @@ def main_menu():
         print("5. Exit")
 
         print("="*30)
+
         option = input("Option: ")
+
         print("="*30)
 
         if option == "1":
@@ -29,12 +31,13 @@ def main_menu():
             notification = input("Activate notification (0/1): ")
             threshold = input("Please enter threshold value: ")
             interval = input("Enter interval (minutes): ")
-
+            print("-"*30)
             print(f"Name: {name}")
             print(f"URL: {url} - XPath: {xpath} - CSS Selector: {css_selector}")
             print(f"Notification active? {notification}")
             print(f"Interval: {interval}")
             print(f"Threshold: {threshold}")
+            print("-"*30)
 
         elif option == "2":
             while True:

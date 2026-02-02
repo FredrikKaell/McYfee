@@ -2,41 +2,66 @@
 Module for creating the menu interface for the user
 """
 
-def run():
-    is_running = True
+def main_menu():
+    while True:
+        print("="*30)
+        print("Welcome to McYfee Scraper")
+        print("Please select option")
+        print("="*30)
+        print("1. Add scraper")
+        print("2. Activate / Deactivate scraper")
+        print("3. Activate / Deactivate notification")
+        print("4. Generate report")
+        print("5. Exit")
 
-    def main_menu():
-        nonlocal is_running
-        print("-"*30)
-        print("Menu:")
-        print("-"*30)
-        print("1. Check current jobs")
-        print("2. Create report")
-        print("3. Quit")
-        print("-"*30)
-        selection = input("Selection: ")
+        print("="*30)
+        option = input("Option: ")
+        print("="*30)
 
-        if selection == "1":
-            print("Checking current jobs...")
-        elif selection == "2":
-            print("Creating report...")
-        elif selection == "3":
-            is_running = False
+        if option == "1":
+            url = input("URL: ")
+            xpath = input("Please enter XPAth (leave empty if not applicable): ")
+            css_selector = input("Please enter CSS Selector (leave empty if not applicable): ")
+            notification = input("Activate notification (0/1): ")
+
+            print(f"{url} - {xpath} - {css_selector} - {notification}")
+
+        elif option == "2":
+            while True:
+                print("1. Activate scraper")
+                print("2. Deactivate scraper")
+                option_2 = input("Option: ")
+                if option_2 == "1":
+                    print("Showing deactivated scrapers")
+                    break
+                if option_2 == "1":
+                    print("Showing deactivated scrapers")
+                    break
+                else:
+                    print("Unknown selection. Please choose another.")
+            
+        elif option == "3":
+            while True:
+                print("1. Activate notification")
+                print("2. Deactivate notification")
+                option_3 = input("Option: ")
+                if option_3 == "1":
+                    print("Showing deactivated notifications")
+                    break
+                if option_3 == "1":
+                    print("Showing deactivated notifications")
+                    break
+                else:
+                    print("Unknown selection. Please choose another.")
+        
+        elif option == "4":
+            print("Generating report...")
+            
+        elif option == "5":
+            return
+        
         else:
-            print("Invalid selection!")
-            main_menu()
-
-    def report_menu():
-        nonlocal is_running
-        print("-"*30)
-        print("Create report:")
-        print("-"*30)
-        print("")
-        print("")
-        print("")
-                
-    while is_running:
-        main_menu()
-
+            print("Unknown selection. Please choose another.")
+                    
 if __name__ == "__main__":
-    run()
+    main_menu()

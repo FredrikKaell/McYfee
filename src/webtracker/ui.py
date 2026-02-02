@@ -3,6 +3,9 @@ Module for creating the menu interface for the user
 """
 
 def main_menu():
+    """
+    Function for generating menu to interact with user.
+    """
     while True:
         print("="*30)
         print("Welcome to McYfee Scraper")
@@ -19,12 +22,19 @@ def main_menu():
         print("="*30)
 
         if option == "1":
+            name = input("Name: ")
             url = input("URL: ")
             xpath = input("Please enter XPAth (leave empty if not applicable): ")
             css_selector = input("Please enter CSS Selector (leave empty if not applicable): ")
             notification = input("Activate notification (0/1): ")
+            threshold = input("Please enter threshold value: ")
+            interval = input("Enter interval (minutes): ")
 
-            print(f"{url} - {xpath} - {css_selector} - {notification}")
+            print(f"Name: {name}")
+            print(f"URL: {url} - XPath: {xpath} - CSS Selector: {css_selector}")
+            print(f"Notification active? {notification}")
+            print(f"Interval: {interval}")
+            print(f"Threshold: {threshold}")
 
         elif option == "2":
             while True:
@@ -39,7 +49,7 @@ def main_menu():
                     break
                 else:
                     print("Unknown selection. Please choose another.")
-            
+
         elif option == "3":
             while True:
                 print("1. Activate notification")
@@ -53,15 +63,15 @@ def main_menu():
                     break
                 else:
                     print("Unknown selection. Please choose another.")
-        
+
         elif option == "4":
             print("Generating report...")
-            
+
         elif option == "5":
             return
-        
+
         else:
             print("Unknown selection. Please choose another.")
-                    
+
 if __name__ == "__main__":
     main_menu()

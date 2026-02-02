@@ -1,0 +1,3 @@
+2026-02-02 22:33:42,884 | INFO | mcyfee | Logger is working
+2026-02-02 22:33:42,885 | WARNING | mcyfee | This is a warning...
+2026-02-02 22:33:42,886 | ERROR | mcyfee | This is an error

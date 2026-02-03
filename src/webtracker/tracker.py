@@ -4,6 +4,12 @@ from datetime import timedelta
 
 import database as db
 
+from concurrent.futures import ThreadPoolExecutor
+
+executor = ThreadPoolExecutor(max_workers=5)
+
+
+
 
 POLL_RATE = 10
 
@@ -19,17 +25,31 @@ class colors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
+def worker_function(row):
+    print(colors.OKGREEN)
+    print('Scraper function triggered!!')
+    print(colors.ENDC)
+
+
+    # Performing task
+    time.sleep(5)
+
+    row_id = row['id']
+    update_last_check = db.update_monitor_last_check(row_id)
+    print(f'{update_last_check} row for last_check updated in db')
+
+    print('Worker klar')
+    return row['id']
+
 def tracker():
     while True:
 
         date_time = datetime.datetime.now()
 
-        for row in db.fetch_monitors_poller('all_due'): 
+        rows = db.fetch_monitors_poller('all_due') or []
+        for row in rows: 
 
-            def scraper_function():
-                print(colors.OKGREEN)
-                print('Scraper function triggered!!')
-                print(colors.ENDC)
+
 
             def messageout():
                 print('Messageout function tiggered!!')
@@ -88,10 +108,9 @@ def tracker():
                     print('Trigger hit!!')
                     print(colors.ENDC)
 
-                    scraper_function()
+                    executor.submit(worker_function, row)
 
-                    update_last_check = db.update_monitor_last_check(monitor_id)
-                    print(f'{update_last_check} row for last_check updated in db')
+
 
                 print('='*60)
                 print('\n')

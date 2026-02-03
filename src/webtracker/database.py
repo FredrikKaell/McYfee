@@ -42,6 +42,25 @@ def fetch_monitors(active: bool = True):
         cursor.close()
         conn.close()  
 
+def fetch_monitor_by_id(id: int = None):
+    conn = db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    try:
+        query = 'SELECT * FROM monitors WHERE id = %s'
+
+        cursor.execute(query, (id, ))
+        result = cursor.fetchall()
+        return result
+
+    except Exception as err:
+        print(f'Error: {err}')   
+        return None 
+
+    finally:
+        cursor.close()
+        conn.close()  
+
 
 def fetch_all_monitors():
     conn = db_connection()
@@ -251,7 +270,7 @@ def update_monitor_last_check(id: int = None, timestamp: datetime = None):
     cursor = conn.cursor()
 
     try:
-        if timestamp == None:
+        if timestamp is None:
             timestamp = datetime.now()
         query = 'UPDATE monitors SET last_check_at = %s where id = %s'
         cursor.execute(query, (timestamp, id))
@@ -279,6 +298,10 @@ if __name__ == '__main__':
     
     print('fetch_monitors():')
     for row in fetch_monitors():
+        print(f'{row}\n')
+
+    print('fetch_monitor_by_id(id=2):')
+    for row in fetch_monitor_by_id(id=2):
         print(f'{row}\n')
 
     print('fetch_selectors():')

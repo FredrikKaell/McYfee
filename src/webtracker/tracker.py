@@ -29,6 +29,7 @@ def worker_function(row):
     row_id = row['id']
     row_name = row['name']
 
+    print('.'*60)
     print(colors.OKGREEN)
     print(f'Worker started: {row_name}')
     print(colors.ENDC)
@@ -42,6 +43,7 @@ def worker_function(row):
     print(f'{update_last_check} row for last_check for {row_name} updated in db')
 
     print(f'Worker done: {row_name}')
+    print('.'*60)
     return row['id']
 
 def tracker():
@@ -51,11 +53,6 @@ def tracker():
 
         rows = db.fetch_monitors_poller('all_due') or []
         for row in rows: 
-
-
-
-            def messageout():
-                print('Messageout function tiggered!!')
 
 
             if (row.get('is_active')) == 1:

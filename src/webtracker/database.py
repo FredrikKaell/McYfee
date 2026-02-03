@@ -6,6 +6,8 @@ from datetime import datetime
 from config import DB_CONFIG
 
 
+
+
 ''' Create connection '''
 
 def db_connection():
@@ -171,7 +173,8 @@ def create_monitor(name: str, url: str, selector_id: int, type: str, threshold: 
         return cursor.rowcount
 
     except Exception as err:
-        print(f'Error: {err}')   
+        print(f'Error: {err}') 
+        conn.rollback()  
         return None 
 
     finally:
@@ -190,7 +193,8 @@ def set_monitor_status(id: int= None, status: int = 0):
         return cursor.rowcount
 
     except Exception as err:
-        print(f'Error: {err}')   
+        print(f'Error: {err}') 
+        conn.rollback()  
         return None 
 
     finally:
@@ -210,6 +214,7 @@ def set_notification_status(id: int= None, status: int = 0):
 
     except Exception as err:
         print(f'Error: {err}')   
+        conn.rollback()
         return None 
 
     finally:
@@ -228,7 +233,8 @@ def delete_monitor(id: int = None):
         return cursor.rowcount
 
     except Exception as err:
-        print(f'Error: {err}')    
+        print(f'Error: {err}')  
+        conn.rollback()  
         return None
 
     finally:
@@ -253,7 +259,8 @@ def update_monitor_last_check(id: int = None, timestamp: datetime = None):
         return cursor.rowcount
 
     except Exception as err:
-        print(f'Error: {err}')    
+        print(f'Error: {err}')   
+        conn.rollback() 
         return None
 
     finally:

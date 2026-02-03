@@ -4,10 +4,10 @@ import datetime
 from datetime import timedelta
 
 DB_CONFIG = {
-    'host': '136.0.141.240',
-    'port': '37628',
-    'user': 'mcyfee_db_user',
-    'password': '',
+    'host': '192.168.8.116',
+    'port': '3306',
+    'user': 'emil_local',
+    'password': '0popcorn0',
     'database': 'mcyfee',
     'charset': 'utf8mb4',
     'collation': 'utf8mb4_unicode_ci'
@@ -39,31 +39,32 @@ def tracker():
         DBConn = mysql.connector.connect(**DB_CONFIG);
         cursor = DBConn.cursor(dictionary=True)
         cursor.execute('''
-            SELECT
-            m.id,
-            m.name,
-            m.url,
-            m.selector_id,
-            m.check_interval,
-            m.type,
-            m.threshold_value,
-            m.is_active,
-            m.last_check_at,
-            m.created_at,
-            s.name as Selector_namn,
-            s.css_selector,
-            s.description,
-            m.notification_id,
-            n.type as Notification_type,
-            n.config as Notification_config
-            FROM monitors AS m
-            LEFT JOIN selectors as s on s.id = m.selector_id
-            INNER JOIN notifications as n on n.id = m.notification_id;
+        SELECT
+        m.id,
+        m.name,
+        m.url,
+        m.selector_id,
+        m.check_interval,
+        m.type,
+        m.threshold_value,
+        m.is_active,
+        m.last_check_at,
+        m.created_at,
+        s.name as Selector_namn,
+        s.css_selector,
+        s.description,
+        m.notification_id,
+        n.type as Notification_type,
+        n.config as Notification_config
+        FROM monitors AS m
+        LEFT JOIN selectors as s on s.id = m.selector_id
+        INNER JOIN notifications as n on n.id = m.notification_id
+        WHERE is_active = 1;
             ''')
 
         row = cursor.fetchall()   
 
-        for row in row:
+        for row in row: 
 
             def scraper_function():
                 print(colors.OKGREEN)

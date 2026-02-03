@@ -26,19 +26,22 @@ class colors:
     UNDERLINE = '\033[4m'
 
 def worker_function(row):
+    row_id = row['id']
+    row_name = row['name']
+
     print(colors.OKGREEN)
-    print('Scraper function triggered!!')
+    print(f'Worker started: {row_name}')
     print(colors.ENDC)
 
 
     # Performing task
     time.sleep(5)
 
-    row_id = row['id']
-    update_last_check = db.update_monitor_last_check(row_id)
-    print(f'{update_last_check} row for last_check updated in db')
 
-    print('Worker klar')
+    update_last_check = db.update_monitor_last_check(row_id)
+    print(f'{update_last_check} row for last_check for {row_name} updated in db')
+
+    print(f'Worker done: {row_name}')
     return row['id']
 
 def tracker():

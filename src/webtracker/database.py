@@ -42,6 +42,7 @@ def fetch_monitors(active: bool = True):
         cursor.close()
         conn.close()  
 
+
 def fetch_monitor_by_id(id: int = None):
     conn = db_connection()
     cursor = conn.cursor(dictionary=True)
@@ -200,6 +201,7 @@ def create_monitor(name: str, url: str, selector_id: int, type: str, threshold: 
         cursor.close()
         conn.close()
 
+
 def set_monitor_status(id: int= None, status: int = 0):
     # Upate status on monitor
     conn = db_connection()
@@ -220,6 +222,7 @@ def set_monitor_status(id: int= None, status: int = 0):
         cursor.close()
         conn.close()
 
+
 def set_notification_status(id: int= None, status: int = 0):
     # Upate status on notification
     conn = db_connection()
@@ -239,6 +242,7 @@ def set_notification_status(id: int= None, status: int = 0):
     finally:
         cursor.close()
         conn.close()
+
 
 def delete_monitor(id: int = None):
     # Delete a monitor

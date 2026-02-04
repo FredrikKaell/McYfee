@@ -148,6 +148,7 @@ def fetch_monitors_poller(type: str = 'all_active'):
                 m.created_at,
                 s.name as selector_name,
                 s.css_selector,
+                s.xpath,
                 s.description,
                 m.notification_id,
                 n.type as notification_type,
@@ -230,7 +231,7 @@ def create_monitor(name: str, url: str, selector_id: int, monitor_type: str, thr
         conn.close()
 
 
-def create_notification(type: str, config: json, active: str = 1):
+def create_notification(type: str, config: dict, active: str = 1):
     # Create a new notification
     conn = db_connection()
     cursor = conn.cursor()
@@ -244,6 +245,32 @@ def create_notification(type: str, config: json, active: str = 1):
         cursor.execute(query, (type, json.dumps(config), active))
         conn.commit()
         return cursor.lastrowid
+
+    except Exception as err:
+        print(f'Error: {err}') 
+        conn.rollback()  
+        return None 
+
+    finally:
+        cursor.close()
+        conn.close()
+
+
+def create_snapshot(monitor_id: int, extracted_value: dict, was_triggered: bool):
+    # Create a snapshot record
+    conn = db_connection()
+    cursor = conn.cursor()
+    
+    try: 
+        query = '''
+            INSERT INTO 
+            snapshots (monitor_id, extracted_value, was_triggered) 
+            VALUES (%s, %s, %s)
+        '''
+        cursor.execute(query, (monitor_id, json.dumps(extracted_value), was_triggered))
+        conn.commit()
+        return cursor.lastrowid
+
 
     except Exception as err:
         print(f'Error: {err}') 
@@ -372,3 +399,4 @@ if __name__ == '__main__':
     print('fetch_selectors(url_pattern=elgiganten):')
     for row in fetch_selectors(url_pattern='elgiganten'):
         print(f'{row}\n')
+

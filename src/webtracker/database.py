@@ -83,14 +83,18 @@ def fetch_all_monitors():
         conn.close()      
 
 
-def fetch_selectors():
+def fetch_selectors(url_pattern: str = None):
     conn = db_connection()
     cursor = conn.cursor(dictionary=True)
 
     try:
-        query = 'SELECT * FROM selectors'
-
-        cursor.execute(query)
+        if url_pattern:
+            query = 'SELECT * FROM selectors WHERE url_pattern LIKE %s'
+            cursor.execute(query, (f'%{url_pattern}%',))
+        else:
+            query = 'SELECT * FROM selectors'
+            cursor.execute(query)
+        
         result = cursor.fetchall()
         return result
 
@@ -362,5 +366,9 @@ if __name__ == '__main__':
         print(f'{row}\n')
 
     print('fetch_notifications():')
-    for row in fetch_selectors():
+    for row in fetch_notifications():
+        print(f'{row}\n')
+
+    print('fetch_selectors(url_pattern=elgiganten):')
+    for row in fetch_selectors(url_pattern='elgiganten'):
         print(f'{row}\n')

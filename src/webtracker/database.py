@@ -191,7 +191,7 @@ def create_selector(name: str, css_selector: str, xpath: str, url_pattern: str, 
         query = '''
             INSERT INTO 
             selectors (name, css_selector, xpath, url_pattern, description) 
-            VALUES (%s, %s, %s, %s)
+            VALUES (%s, %s, %s, %s, %s)
         '''
         cursor.execute(query, (name, css_selector, xpath, url_pattern, description))
         conn.commit()
@@ -206,7 +206,7 @@ def create_selector(name: str, css_selector: str, xpath: str, url_pattern: str, 
         cursor.close()
         conn.close()
 
-def create_monitor(name: str, url: str, selector_id: int, type: str, threshold: int, check_interval: int, is_active: int):
+def create_monitor(name: str, url: str, selector_id: int, monitor_type: str, threshold: int, check_interval: int, is_active: int):
     # Create a new monitor
     conn = db_connection()
     cursor = conn.cursor()
@@ -217,7 +217,7 @@ def create_monitor(name: str, url: str, selector_id: int, type: str, threshold: 
             monitors (name, url, selector_id, type, threshold_value, check_interval, is_active) 
             VALUES (%s, %s, %s, %s, %s, %s, %s)
         '''
-        cursor.execute(query, (name, url, selector_id, type, threshold, check_interval, is_active))
+        cursor.execute(query, (name, url, selector_id, monitor_type, threshold, check_interval, is_active))
         conn.commit()
         return cursor.rowcount
 

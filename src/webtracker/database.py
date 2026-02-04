@@ -177,6 +177,30 @@ def fetch_monitors_poller(type: str = 'all_active'):
 
 ''' Insert, update, delete actions '''
 
+def create_selector(name: str, css_selector: str, xpath: str, url_pattern: str, description: str):
+    # Create a new selector
+    conn = db_connection()
+    cursor = conn.cursor()
+    
+    try: 
+        query = '''
+            INSERT INTO 
+            selectors (name, css_selector, xpath, url_pattern, description) 
+            VALUES (%s, %s, %s, %s)
+        '''
+        cursor.execute(query, (name, css_selector, xpath, url_pattern, description))
+        conn.commit()
+        return cursor.lastrowid
+
+    except Exception as err:
+        print(f'Error: {err}') 
+        conn.rollback()  
+        return None 
+
+    finally:
+        cursor.close()
+        conn.close()
+
 def create_monitor(name: str, url: str, selector_id: int, type: str, threshold: int, check_interval: int, is_active: int):
     # Create a new monitor
     conn = db_connection()
@@ -191,6 +215,31 @@ def create_monitor(name: str, url: str, selector_id: int, type: str, threshold: 
         cursor.execute(query, (name, url, selector_id, type, threshold, check_interval, is_active))
         conn.commit()
         return cursor.rowcount
+
+    except Exception as err:
+        print(f'Error: {err}') 
+        conn.rollback()  
+        return None 
+
+    finally:
+        cursor.close()
+        conn.close()
+
+
+def create_notification(type: str, config: json, active: str = 1):
+    # Create a new notification
+    conn = db_connection()
+    cursor = conn.cursor()
+    
+    try: 
+        query = '''
+            INSERT INTO 
+            monitors (type, config, active) 
+            VALUES (%s, %s, %s)
+        '''
+        cursor.execute(query, (type, config, active))
+        conn.commit()
+        return cursor.lastrowid
 
     except Exception as err:
         print(f'Error: {err}') 

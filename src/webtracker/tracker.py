@@ -9,7 +9,7 @@ from concurrent.futures import ThreadPoolExecutor
 executor = ThreadPoolExecutor(max_workers=5)
 
 
-
+DEBUG_MODE = False
 
 POLL_RATE = 10
 
@@ -29,11 +29,7 @@ def worker_function(row):
     row_id = row['id']
     row_name = row['name']
 
-    print('.'*60)
-    print(colors.OKGREEN)
     print(f'Worker started: {row_name}')
-    print(colors.ENDC)
-
 
     # Performing task
     time.sleep(5)
@@ -43,10 +39,9 @@ def worker_function(row):
     print(f'{update_last_check} row for last_check for {row_name} updated in db')
 
     print(f'Worker done: {row_name}')
-    print('.'*60)
     return row['id']
 
-def tracker():
+def tracker(daemon: bool = True):
     while True:
 
         date_time = datetime.datetime.now()
@@ -80,27 +75,28 @@ def tracker():
                 else:
                     next_check = created_at + timedelta(minutes=check_interval)
 
-                print('='*60)
-                print(f'Monitor id: {monitor_id}')
-                print(f'Monitor name: {monitor_name}')
-                print(f'Monitor url: {monitor_url}')
-                print(f'Monitor threshold: {monitor_threshold}')
+                if DEBUG_MODE:
+                    print('='*60)
+                    print(f'Monitor id: {monitor_id}')
+                    print(f'Monitor name: {monitor_name}')
+                    print(f'Monitor url: {monitor_url}')
+                    print(f'Monitor threshold: {monitor_threshold}')
 
-                print()
+                    print()
 
-                print(f'Selector name: {selector_name}')
-                print(f'Selector description: {selector_description}')
-                print(f'Selector css: {selector_css[:150]}...')
-                print(f'Notification via: {notification_type}')
+                    print(f'Selector name: {selector_name}')
+                    print(f'Selector description: {selector_description}')
+                    print(f'Selector css: {selector_css[:150]}...')
+                    print(f'Notification via: {notification_type}')
 
-                print()
+                    print()
 
-                print(f'Check interval: {check_interval} minutes')
+                    print(f'Check interval: {check_interval} minutes')
 
-                print(f'Created at: {created_at}')
-                print(f'Last check at: {last_checked}')
-                print(f'Next check at: {next_check}')
-                print(f'Now time: {date_time}')
+                    print(f'Created at: {created_at}')
+                    print(f'Last check at: {last_checked}')
+                    print(f'Next check at: {next_check}')
+                    print(f'Now time: {date_time}')
                 
 
                 if next_check <= date_time:
@@ -114,13 +110,17 @@ def tracker():
 
                 print('='*60)
                 print('\n')
-        print(colors.OKBLUE)
-        print(f'Chillar i {POLL_RATE} sekunder.')
-        print(colors.ENDC)
-        time.sleep(POLL_RATE)
+
+        if daemon is True:        
+            print(colors.OKBLUE)
+            print(f'Chillar i {POLL_RATE} sekunder.')
+            print(colors.ENDC)
+            time.sleep(POLL_RATE)
+        else:
+            break
 
 
 
 
 if __name__ == '__main__':
-    tracker()
+    tracker(daemon=False)

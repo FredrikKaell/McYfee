@@ -1,0 +1,2 @@
+2026-02-05 00:52:56,191 | INFO | mcyfee | Notifier sent message: Test message from McYfee again
+2026-02-05 00:52:57,728 | ERROR | mcyfee | Notifier error: 404 Client Error: Not Found for url: https://discord.com/api/Webhooks/wrong_url

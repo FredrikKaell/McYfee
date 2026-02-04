@@ -205,7 +205,7 @@ def create_selector(name: str, css_selector: str, xpath: str, url_pattern: str, 
         cursor.close()
         conn.close()
 
-def create_monitor(name: str, url: str, selector_id: int, monitor_type: str, threshold: int, check_interval: int, is_active: int):
+def create_monitor(name: str, url: str, selector_id: int, monitor_type: str, threshold: int, check_interval: int, is_active: int, notification_id: int):
     # Create a new monitor
     conn = db_connection()
     cursor = conn.cursor()
@@ -213,10 +213,10 @@ def create_monitor(name: str, url: str, selector_id: int, monitor_type: str, thr
     try: 
         query = '''
             INSERT INTO 
-            monitors (name, url, selector_id, type, threshold_value, check_interval, is_active) 
-            VALUES (%s, %s, %s, %s, %s, %s, %s)
+            monitors (name, url, selector_id, type, threshold_value, check_interval, is_active, notification_id) 
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
         '''
-        cursor.execute(query, (name, url, selector_id, monitor_type, threshold, check_interval, is_active))
+        cursor.execute(query, (name, url, selector_id, monitor_type, threshold, check_interval, is_active, notification_id))
         conn.commit()
         return cursor.rowcount
 
@@ -238,10 +238,10 @@ def create_notification(type: str, config: json, active: str = 1):
     try: 
         query = '''
             INSERT INTO 
-            monitors (type, config, active) 
+            notifications (type, config, active) 
             VALUES (%s, %s, %s)
         '''
-        cursor.execute(query, (type, config, active))
+        cursor.execute(query, (type, json.dumps(config), active))
         conn.commit()
         return cursor.lastrowid
 

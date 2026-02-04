@@ -1,5 +1,5 @@
 """
-Module for application-wide logging.
+#Module for application-wide logging.
 """
 
 import logging
@@ -21,7 +21,8 @@ class AppLogger:
             self._setup_handlers()
 
     def _ensure_log_directory(self):
-        """Create log directory if it does not exist"""
+
+        #Create log directory if it does not exist
         self.log_dir.mkdir(exist_ok=True)
 
     def _setup_handlers(self):
@@ -43,8 +44,8 @@ class AppLogger:
 
 
 # TEST
-if __name__ == "__main__":
-    logger = AppLogger().get_logger()
-    logger.info("Logger is working")
-    logger.warning("This is a warning...")
-    logger.error("This is an error")
+#if __name__ == "__main__":
+    #logger = AppLogger().get_logger()
+    #logger.info("Logger is working")
+    #logger.warning("This is a warning...")
+    #logger.error("This is an error")

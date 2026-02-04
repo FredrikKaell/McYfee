@@ -3,10 +3,11 @@ from mysql.connector import Error
 import json
 from datetime import datetime
 
-from config import DB_CONFIG
+from . import config
+# from webtracker.config import DB_CONFIG
 
 
-
+DB_CONFIG = config.DB_CONFIG
 
 ''' Create connection '''
 

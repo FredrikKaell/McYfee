@@ -2,6 +2,8 @@
 Module for creating the menu interface for the user
 """
 
+from database import fetch_monitors
+
 def main_menu():
     """
     Function for generating menu to interact with user.
@@ -13,7 +15,7 @@ def main_menu():
         print("="*30)
         print("1. Add scraper")
         print("2. Activate / Deactivate scraper")
-        print("3. Activate / Deactivate notification")
+        print("3. List active scrapers")
         print("4. Generate report")
         print("5. Exit")
 
@@ -46,6 +48,8 @@ def main_menu():
                 option_2 = input("Option: ")
                 if option_2 == "1":
                     print("Showing deactivated scrapers")
+                    for post in fetch_monitors(False):
+                        print(f"{post.id} ")
                     break
                 if option_2 == "1":
                     print("Showing deactivated scrapers")

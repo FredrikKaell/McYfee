@@ -33,7 +33,13 @@ jobs:
 
       - name: Flake8 (fail only fail on critical issus)
         run: |
-          flake8 .
+          flake8 . \
+          --exclude=.venv,__pycache__,.env,.resources \
+          --select=E9,F63,F7,F82 \
+          --max-line-length=200 \
+          --count \
+          --show-source \
+          --statistics
 
       #- name: Pytest (with coverage)
       #  run: |

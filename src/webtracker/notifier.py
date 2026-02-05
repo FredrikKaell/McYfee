@@ -3,11 +3,10 @@
 """
 
 import requests
-
 from typing import Optional
+from logger import AppLogger
 
-#Sends messages to a Discord channel via webhook.
-
+logger = AppLogger().get_logger()
 class DiscordNotifier:
     
     def __init__(self, webhook_url: str):
@@ -19,11 +18,13 @@ class DiscordNotifier:
             "username": username,
             "content": message
         }
+
         try:
             response = requests.post(self.webhook_url, json=payload, timeout=10)
             response.raise_for_status()
+            logger.info(f"Notifier sent message: {message}")
         except requests.RequestException as e:
-            print(f"Notifier error: {e}")
+            logger.error(f"Notifier error: {e}")
 
 #TEST
 
@@ -32,4 +33,8 @@ class DiscordNotifier:
     #WEBHOOK_URL = "https://discord.com/api/webhooks/1466515978497036380/F8JwMrt75R1uCE5iXbsx74PW9lVYFu6pNlh7AAtdR7JEYGQKERdbAC4T3DmTRRe8fs6g"
     
     #notifier = DiscordNotifier(WEBHOOK_URL)
-    #notifier.send("Test message from McYfee")
+    #Test INFO-logg
+    #notifier.send("Test message from McYfee again")
+    #Test ERROR-logg
+    #notifier_fail = DiscordNotifier("https://discord.com/api/Webhooks/wrong_url")
+    #notifier_fail.send("Detta ska trigga error log")

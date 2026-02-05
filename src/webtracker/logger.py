@@ -35,7 +35,7 @@ class AppLogger:
 
         file_handler = logging.FileHandler(self.log_file, encoding="utf-8")
         file_handler.setFormatter(formatter)
-
+https://github.com/FredrikKaell/McYfee/pull/6/conflict?name=src%252Fwebtracker%252Flogger.py&ancestor_oid=e69de29bb2d1d6434b8b29ae775ad8c2e48c5391&base_oid=8fd752c8386487a4e2e1f641ae7c9d6b86e67e30&head_oid=f73cd4e8490ecbf12f9fe6cf922ffb09bca0750d
         self.logger.addHandler(console_handler)
         self.logger.addHandler(file_handler)
 

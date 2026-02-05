@@ -29,13 +29,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          if [ -f pyproject.toml ]; then
-            python -m pip install .[dev]
-          elif [ -f requirements_ci.txt ]; then
-            python -m pip install -r requirements_ci.txt
-          else
-            python -m pip install pytest flake8 pytest-cov
-          fi
+          python -m pip install pytest flake8 pytest-cov
 
       - name: Flake8 (fail only fail on critical issus)
         run: |

@@ -3,7 +3,7 @@ from mysql.connector import Error
 import json
 from datetime import datetime
 
-from config import DB_CONFIG
+from webtracker.config import DB_CONFIG
 
 
 

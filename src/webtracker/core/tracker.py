@@ -8,7 +8,7 @@ import json
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-import database as db
+from webtracker.database import database as db
 from parser import parse
 from notifier import DiscordNotifier
 

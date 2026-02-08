@@ -8,3 +8,6 @@ eggs/
 .env/
 .cache
 .pytest_cache/
+
+logs/
+reports/

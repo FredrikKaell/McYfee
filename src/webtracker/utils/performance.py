@@ -1,7 +1,9 @@
 import datetime
 
-import database as db
+from webtracker import database as db
 from pathlib import Path
+
+from webtracker.config import PROJECT_ROOT
 
 
 
@@ -113,7 +115,7 @@ def create_performance_report(report_name='Performance report',horizon='today'):
 
 
 def save_report_to_file(reportcontent=None, filename=None):
-    reports_dir = Path('data/reports/performance')
+    reports_dir = PROJECT_ROOT / 'reports' / 'performance'
     reports_dir.mkdir(parents=True, exist_ok=True)
 
     date = datetime.datetime.now().strftime('%Y%m%d')

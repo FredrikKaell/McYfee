@@ -4,7 +4,7 @@
 
 import requests
 from typing import Optional
-from logger import AppLogger
+from webtracker.utils.logger import AppLogger
 
 logger = AppLogger().get_logger()
 class DiscordNotifier:

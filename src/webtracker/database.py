@@ -146,6 +146,8 @@ def fetch_monitors_poller(type: str = 'all_active'):
                 m.is_active,
                 m.last_check_at,
                 m.created_at,
+                m.last_extracted_value,
+                m.previous_extracted_value,
                 s.name as selector_name,
                 s.css_selector,
                 s.xpath,
@@ -167,6 +169,45 @@ def fetch_monitors_poller(type: str = 'all_active'):
                     )
             '''
         cursor.execute(query)
+        result = cursor.fetchall()
+        return result
+
+    except Exception as err:
+        print(f'Error: {err}')   
+        return None 
+
+    finally:
+        cursor.close()
+        conn.close()
+
+def fetch_snapshots(monitor_id: str = None):
+    # Fetching records from the snapshots table. Pass a monitor id if you want!
+    conn = db_connection()
+    cursor = conn.cursor(dictionary=True)
+    
+    try: 
+        query = '''
+            SELECT
+                s.monitor_id,
+                s.extracted_value,
+                s.was_triggered,
+                s.created_at,
+                m.name,
+                m.check_interval,
+                n.type,
+                n.config
+                FROM snapshots as s
+                INNER JOIN monitors as m on s.monitor_id = m.id
+                INNER JOIN notifications as n on m.notification_id = n.id
+        '''
+
+        if monitor_id:
+            query += ' WHERE s.monitor_id = %s ORDER BY s.created_at DESC'
+            cursor.execute(query, (monitor_id,))
+        else:
+            query += ' ORDER BY s.created_at DESC'
+            cursor.execute(query)  
+            
         result = cursor.fetchall()
         return result
 
@@ -324,6 +365,40 @@ def set_notification_status(id: int= None, status: int = 0):
         conn.close()
 
 
+def update_monitor_values(monitor_id: int, last_extracted_value: dict, previous_extracted_value: dict = None, last_changed_at: datetime = None):
+    # Update extracted values for a monitor.
+    conn = db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        query = '''
+            UPDATE monitors 
+            SET last_extracted_value = %s,
+                previous_extracted_value = %s,
+                last_changed_at = %s
+            WHERE id = %s
+        '''
+        
+        cursor.execute(query, (
+            json.dumps(last_extracted_value),
+            json.dumps(previous_extracted_value) if previous_extracted_value else None,
+            last_changed_at,
+            monitor_id
+        ))
+        conn.commit()
+        
+        return cursor.rowcount
+        
+    except Exception as err:
+        conn.rollback()
+        print(f'Error: {err}')
+        return None
+        
+    finally:
+        cursor.close()
+        conn.close()
+
+
 def delete_monitor(id: int = None):
     # Delete a monitor
     conn = db_connection()
@@ -370,6 +445,60 @@ def update_monitor_last_check(id: int = None, timestamp: datetime = None):
         cursor.close()
         conn.close()
 
+def save_performance_record(operation_name: str,start_time,end_time):
+    conn = db_connection()
+    cursor = conn.cursor()
+
+    query = 'INSERT INTO performance (operation,start_time,end_time) VALUES(%s,%s,%s)'
+     
+    try:
+        cursor.execute(query, (operation_name.title(),start_time,end_time))
+        conn.commit()
+        return cursor.rowcount
+
+    except Exception as err:
+        print(f'Error: {err}')   
+        conn.rollback() 
+        return None
+
+    finally:
+        cursor.close()
+        conn.close()
+
+
+def fetch_performance_records(horizon: str = None):
+    conn = db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    try:
+        query = '''
+            SELECT 
+                p.id,
+                p.operation,
+                p.start_time,
+                p.end_time,
+                TIMESTAMPDIFF(MICROSECOND, p.start_time, p.end_time) / 1000000 AS operation_time
+            FROM performance AS p
+        '''
+
+        if horizon:
+            query += ' WHERE DATE(p.start_time) LIKE %s'
+            cursor.execute(query, (f'{horizon}%',)) 
+        else:
+            # All records
+            query += ' ORDER BY p.id DESC'
+            cursor.execute(query)
+              
+        result = cursor.fetchall()
+        return result
+
+    except Exception as err:
+        print(f'Error: {err}')   
+        return None 
+
+    finally:
+        cursor.close()
+        conn.close()
 
 
 if __name__ == '__main__':

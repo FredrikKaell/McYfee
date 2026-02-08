@@ -3,7 +3,7 @@ Module for creating the menu interface for the user
 """
 import tldextract
 from webtracker.database import database as db
-from .selections import change_monitor_status, add_monitor
+from .selections import change_monitor_status, add_monitor, create_report
 
 
 
@@ -67,7 +67,8 @@ def main_menu():
                
 
         elif option == "4":
-            print("Generating report...")
+            print("Generate report!")
+            create_report()
 
         elif option == "5":
             return

@@ -57,7 +57,7 @@ def worker_function(row):
             "xpath": xpath,
         }
         fetched_value = timed_operation(parser.parse, url, selector)
-        log.info(f'Fetched value for "{row_name}" with id {row_id}: {fetched_value}')
+        log.info(f'Fetched value for "{row_name}" with id {row_id}: {fetched_value}. Threshold: {threshold}')
 
         fetched_value_regex = re.search(r'(\d[\d\s.,]*\d|\d+)', fetched_value)
 

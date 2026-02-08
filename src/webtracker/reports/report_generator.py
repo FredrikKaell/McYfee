@@ -133,5 +133,5 @@ def create_chart(monitor_id: int = None, days: int = 30):
 
 
 if __name__ == '__main__':
-    timed_operation(create_chart,days=3)
-    timed_operation(create_chart,monitor_id=20,days=3)
+    timed_operation(create_chart,days=30)
+    timed_operation(create_chart,monitor_id=20,days=30)

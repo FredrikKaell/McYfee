@@ -3,7 +3,9 @@ Module for handling functions that are accessed through CLI menu
 """
 import tldextract
 from webtracker.database import database as db
-from webtracker.utils import validator
+from webtracker.utils import input_validator
+from webtracker.reports import report_generator
+
 from .helper import check_existing_selectors, get_selector_by_id
 
 
@@ -101,16 +103,21 @@ def add_monitor():
         selector_name = input("Name: ")
         css_selector = input("Please enter CSS Selector (leave empty if not applicable): ")
         desc = input("Description: ")
-        
+
         selector_values = {
             "selector_name" : selector_name,
             "css_selector" : css_selector,
             "url_pattern" : tldextract.extract(url).domain,
             "description" : desc
         }
-        data = validator.check_user_input(validator.CreateSelector, selector_values)
+        data = input_validator.check_user_input(input_validator.CreateSelector, selector_values)
 
-        selector_id = db.create_selector(data.selector_name, None, data.css_selector, data.url_pattern, data.description)
+        selector_id = db.create_selector(
+            data.selector_name, 
+            None, data.css_selector, 
+            data.url_pattern, 
+            data.description
+            )
     threshold = input("Please enter threshold value: ")
     interval = input("Enter interval (minutes): ")
 
@@ -125,7 +132,26 @@ def add_monitor():
         "notification_id" : 1
     }
 
-    monitor_input = validator.check_user_input(validator.CreateMonitor, user_input=user_input)
-    print(monitor_input)
-    print(str(monitor_input.url))
-    db.create_monitor(name=name, url=url, selector_id=selected_selector['id'], monitor_type='price', threshold=threshold, check_interval=interval, is_active=1, notification_id=1)
+    monitor_input = input_validator.check_user_input(input_validator.CreateMonitor, user_input=user_input)
+    db.create_monitor(
+        name=monitor_input.name,
+        url=str(monitor_input.url),
+        selector_id= monitor_input.selector_id,
+        monitor_type=monitor_input.monitor_type,
+        threshold=monitor_input.threshold,
+        check_interval=monitor_input.check_intervall,
+        is_active=monitor_input.is_active,
+        notification_id=monitor_input.notification_id
+        )
+
+def create_report(monitor_id : int = None, days : int = 30):
+    print("Generate report")
+    monitor_id = input("Monitor ID:")
+    days = input("Number of days to include: ")
+    data = {
+        "monitor_id" : monitor_id,
+        "days" : days
+    }
+
+    values = input_validator.check_user_input(input_validator.CreateReport, data)
+    report_generator.create_chart(values.monitor_id, values.days)

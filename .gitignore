@@ -9,5 +9,5 @@ eggs/
 .cache
 .pytest_cache/
 
-logs/
-reports/
+/logs/
+/reports/

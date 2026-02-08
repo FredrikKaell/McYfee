@@ -5,6 +5,9 @@ from datetime import datetime
 
 from webtracker.config import DB_CONFIG
 
+from webtracker.utils.logger import AppLogger
+log = AppLogger().get_logger()
+
 
 
 
@@ -16,7 +19,7 @@ def db_connection():
         conn = mysql.connector.connect(**DB_CONFIG)
         return conn
     except Error as err:
-        print(f"Error connecting to database: {err}")
+        log.error(f"Error connecting to database: {err}")
         raise
 
 
@@ -35,7 +38,7 @@ def fetch_monitors(active: bool = True):
         return result
 
     except Exception as err:
-        print(f'Error: {err}')   
+        log.error(f'Error: {err}')   
         return None 
 
     finally:
@@ -55,7 +58,7 @@ def fetch_monitor_by_id(id: int = None):
         return result
 
     except Exception as err:
-        print(f'Error: {err}')   
+        log.error(f'Error: {err}')   
         return None 
 
     finally:
@@ -75,7 +78,7 @@ def fetch_all_monitors():
         return result
 
     except Exception as err:
-        print(f'Error: {err}') 
+        log.error(f'Error: {err}') 
         return None    
 
     finally:
@@ -99,7 +102,7 @@ def fetch_selectors(url_pattern: str = None):
         return result
 
     except Exception as err:
-        print(f'Error: {err}')  
+        log.error(f'Error: {err}')  
         return None  
 
     finally:
@@ -119,7 +122,7 @@ def fetch_notifications(active: bool = True):
         return result
 
     except Exception as err:
-        print(f'Error: {err}') 
+        log.error(f'Error: {err}') 
         return None   
 
     finally:
@@ -173,7 +176,7 @@ def fetch_monitors_poller(type: str = 'all_active'):
         return result
 
     except Exception as err:
-        print(f'Error: {err}')   
+        log.error(f'Error: {err}')   
         return None 
 
     finally:
@@ -212,7 +215,7 @@ def fetch_snapshots(monitor_id: str = None):
         return result
 
     except Exception as err:
-        print(f'Error: {err}')   
+        log.error(f'Error: {err}')   
         return None 
 
     finally:
@@ -239,7 +242,7 @@ def create_selector(name: str, css_selector: str, xpath: str, url_pattern: str, 
         return cursor.lastrowid
 
     except Exception as err:
-        print(f'Error: {err}') 
+        log.error(f'Error: {err}') 
         conn.rollback()  
         return None 
 
@@ -263,7 +266,7 @@ def create_monitor(name: str, url: str, selector_id: int, monitor_type: str, thr
         return cursor.rowcount
 
     except Exception as err:
-        print(f'Error: {err}') 
+        log.error(f'Error: {err}') 
         conn.rollback()  
         return None 
 
@@ -288,7 +291,7 @@ def create_notification(type: str, config: dict, active: str = 1):
         return cursor.lastrowid
 
     except Exception as err:
-        print(f'Error: {err}') 
+        log.error(f'Error: {err}') 
         conn.rollback()  
         return None 
 
@@ -314,7 +317,7 @@ def create_snapshot(monitor_id: int, extracted_value: dict, was_triggered: bool)
 
 
     except Exception as err:
-        print(f'Error: {err}') 
+        log.error(f'Error: {err}') 
         conn.rollback()  
         return None 
 
@@ -335,7 +338,7 @@ def set_monitor_status(id: int= None, status: int = 0):
         return cursor.rowcount
 
     except Exception as err:
-        print(f'Error: {err}') 
+        log.error(f'Error: {err}') 
         conn.rollback()  
         return None 
 
@@ -356,7 +359,7 @@ def set_notification_status(id: int= None, status: int = 0):
         return cursor.rowcount
 
     except Exception as err:
-        print(f'Error: {err}')   
+        log.error(f'Error: {err}')   
         conn.rollback()
         return None 
 
@@ -411,7 +414,7 @@ def delete_monitor(id: int = None):
         return cursor.rowcount
 
     except Exception as err:
-        print(f'Error: {err}')  
+        log.error(f'Error: {err}')  
         conn.rollback()  
         return None
 
@@ -437,7 +440,7 @@ def update_monitor_last_check(id: int = None, timestamp: datetime = None):
         return cursor.rowcount
 
     except Exception as err:
-        print(f'Error: {err}')   
+        log.error(f'Error: {err}')   
         conn.rollback() 
         return None
 
@@ -457,7 +460,7 @@ def save_performance_record(operation_name: str,start_time,end_time):
         return cursor.rowcount
 
     except Exception as err:
-        print(f'Error: {err}')   
+        log.error(f'Error: {err}')   
         conn.rollback() 
         return None
 
@@ -493,7 +496,7 @@ def fetch_performance_records(horizon: str = None):
         return result
 
     except Exception as err:
-        print(f'Error: {err}')   
+        log.error(f'Error: {err}')   
         return None 
 
     finally:

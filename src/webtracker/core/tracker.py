@@ -15,6 +15,9 @@ from webtracker.notifications import discord_notifier
 from webtracker.utils.performance import timed_operation,performance_report_job
 from webtracker import config
 
+from webtracker.utils.logger import AppLogger
+log = AppLogger().get_logger()
+
 from concurrent.futures import ThreadPoolExecutor
 
 
@@ -57,7 +60,7 @@ def worker_function(row):
             "xpath": xpath,
         }
         fetched_value = timed_operation(parser.parse, url, selector)
-        print(f'Fetched price for {row_name}: {fetched_value}')
+        log.info(f'Fetched price for {row_name}: {fetched_value}')
 
         fetched_value_regex = re.search(r'(\d[\d\s.,]*\d|\d+)', fetched_value)
 
@@ -67,8 +70,7 @@ def worker_function(row):
             fetched_price = float(num_str)
             
             if fetched_price <= threshold:
-                print('Monitored value is under the threshold value!!')
-                print('Trigger Notifier!!')
+                log.info('Monitored value is under the threshold value, trigger Notifier!!')
                 was_triggered = True
                 previous_price = None
                 change_percent = None
@@ -96,7 +98,7 @@ def worker_function(row):
                 print(f'{deactivate_monitor} monitor has been deactivated with id {row_id}.')
 
         else:
-            print(f'Could not extract value from {fetched_value}')
+            log.error(f'Could not extract value from {fetched_value}')
             return None
 
         extract = {
@@ -122,7 +124,7 @@ def worker_function(row):
         return row['id']
 
     except Exception as err:
-        print(f'Error: {err}')
+        log.error(f'Error: {err}')
 
     finally:
         update_last_check = db.update_monitor_last_check(row_id)
@@ -134,6 +136,7 @@ def worker_function(row):
 def tracker(daemon: bool = True):
     while True:
         date_time = datetime.datetime.now()
+
 
         rows = db.fetch_monitors_poller('all_due') or []
         for row in rows: 

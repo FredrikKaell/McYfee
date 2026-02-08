@@ -1,51 +1,56 @@
 mcyfee/
-├── README.md
-├── pyproject.toml
-├── requirements.txt
-├── setup.py
+├── .env
 ├── .gitignore
-│
-├── config/
-│   ├── config.py          # Settings (poll_rate, workers, etc)
-│   └── .env.example         # Template för secrets
+├── .flake8
+├── pyproject.toml
+├── README.md
+├── requirements.txt│
 │    
 ├── logs/
+│   └── loggfiler
 │
 ├── reports/
+│   └── rapportfiler
 │
 ├── src/
-│   └── webtracker/        # webtracker eller mcyfee
+│   └── webtracker/        # webtracker
 │       ├── __init__.py
+│       ├──  config.py          
 │       │
-│       ├── core/            # Core/Orchestrator
+│       ├── core/            # Core
 │       │   ├── __init__.py
-│       │   ├── tracker.py       # Main tracker/orchestrator
+│       │   ├── tracker.py       # Main tracker
 │       │   └── worker.py        # Worker function
 │       │
 │       ├── scraper/         # Scraper module
 │       │   ├── __init__.py
-│       │   ├── parser.py        # HTML parsing logic
-│       │   └── extractors.py   # Price/text/image extractors
+│       │   ├── parser.
+│       │   └── scraper.py   
 │       │
-│       ├── database/        # Database module
+│       ├── database/        # DB actions
 │       │   ├── __init__.py
 │       │   └── database.py       
 │       │
-│       ├── notifications/   # Notifications module
+│       ├── notifications/   # Notifications
 │       │   ├── __init__.py
 │       │   ├── discord.py      # Discord notifier
 │       │   ├── telegram.py     # Telegram notifier
 │       │   └── email.py        # Email notifier
 │       │
-│       ├── ui/              # UI module (CLI för nu)
+│       ├── reports/        # Report gen.
+│       │   ├── __init__.py
+│       │   └── generator.py
+│       │
+│       ├── ui/              # UI module
 │       │   ├── __init__.py
 │       │   ├── cli.py          # CLI commands
-│       │   └── colors.py       # Color definitions
+│       │   └──        # Color definitions
 │       │
 │       └── utils/           # Utilities
 │           ├── __init__.py
 │           ├── logger.py       # Logging setup
-│           └── helpers.py      # Helper functions
+│           ├── inputvalidation.py # Validation for all user input to db
+│           └── performance.py      # Performance measure
 │
 ├── tests/                   # Tests
 │   ├── __init__.py
@@ -60,5 +65,3 @@ mcyfee/
 ├── docs/                    # Documentation
 │   ├── architecture.md
 │   └── user_guide.md
-│
-└── 

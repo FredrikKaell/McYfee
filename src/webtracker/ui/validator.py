@@ -13,6 +13,9 @@ class CreateMonitor(BaseModel):
 
 class CreateSelector(BaseModel):
     selector_name : str
+    css_selector : str
+    url_pattern : str
+    description : str
 
 def check_user_input(model : type[BaseModel], user_input : dict):
     fields = model.model_fields.keys()

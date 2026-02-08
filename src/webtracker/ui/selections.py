@@ -4,7 +4,7 @@ Module for handling functions that are accessed through CLI menu
 import tldextract
 from webtracker.database import fetch_monitors, set_monitor_status, fetch_selectors, create_selector, create_monitor
 from .helper import check_existing_selectors, get_selector_by_id
-from .validator import check_user_input, CreateMonitor
+from .validator import check_user_input, CreateMonitor, CreateSelector
 
 
 def change_monitor_status(active_monitors = True):
@@ -99,11 +99,18 @@ def add_monitor():
     if is_creating_selector or not existing_selectors:
         print("Creating new selector")
         selector_name = input("Name: ")
-        xpath = input("Please enter XPAth (leave empty if not applicable): ")
         css_selector = input("Please enter CSS Selector (leave empty if not applicable): ")
         desc = input("Description: ")
+        
+        selector_values = {
+            "selector_name" : selector_name,
+            "css_selector" : css_selector,
+            "url_pattern" : tldextract.extract(url).domain,
+            "description" : desc
+        }
+        data = check_user_input(CreateSelector, selector_values)
 
-        selector_id = create_selector(selector_name, css_selector, xpath, tldextract.extract(url).domain, desc)
+        selector_id = create_selector(data.selector_name, None, data.css_selector, data.url_pattern, data.description)
     threshold = input("Please enter threshold value: ")
     interval = input("Enter interval (minutes): ")
 

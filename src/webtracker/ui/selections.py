@@ -2,16 +2,16 @@
 Module for handling functions that are accessed through CLI menu
 """
 import tldextract
-from webtracker.database import fetch_monitors, set_monitor_status, fetch_selectors, create_selector, create_monitor
+from webtracker.database import database as db
+from webtracker.utils import validator
 from .helper import check_existing_selectors, get_selector_by_id
-from .validator import check_user_input, CreateMonitor, CreateSelector
 
 
 def change_monitor_status(active_monitors = True):
     """
     Function for changing status of monitors (activate / deactivate)
     """
-    monitors = fetch_monitors(active_monitors)
+    monitors = db.fetch_monitors(active_monitors)
 
     if active_monitors:
         print("Showing activate monitors")
@@ -40,7 +40,7 @@ def change_monitor_status(active_monitors = True):
             if selection == "q":
                 return
             if int(selection) in allowed_ids:
-                set_monitor_status(int(selection), int(not active_monitors))
+                db.set_monitor_status(int(selection), int(not active_monitors))
                 return
 
         except Exception as e:
@@ -108,9 +108,9 @@ def add_monitor():
             "url_pattern" : tldextract.extract(url).domain,
             "description" : desc
         }
-        data = check_user_input(CreateSelector, selector_values)
+        data = validator.check_user_input(validator.CreateSelector, selector_values)
 
-        selector_id = create_selector(data.selector_name, None, data.css_selector, data.url_pattern, data.description)
+        selector_id = db.create_selector(data.selector_name, None, data.css_selector, data.url_pattern, data.description)
     threshold = input("Please enter threshold value: ")
     interval = input("Enter interval (minutes): ")
 
@@ -125,7 +125,7 @@ def add_monitor():
         "notification_id" : 1
     }
 
-    monitor_input = check_user_input(CreateMonitor, user_input=user_input)
+    monitor_input = validator.check_user_input(validator.CreateMonitor, user_input=user_input)
     print(monitor_input)
     print(str(monitor_input.url))
-    # create_monitor(name=name, url=url, selector_id=selected_selector['id'], monitor_type='price', threshold=threshold, check_interval=interval, is_active=1)
+    db.create_monitor(name=name, url=url, selector_id=selected_selector['id'], monitor_type='price', threshold=threshold, check_interval=interval, is_active=1, notification_id=1)

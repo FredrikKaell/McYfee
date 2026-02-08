@@ -2,14 +2,16 @@
 Module for creating the menu interface for the user
 """
 import tldextract
-from webtracker.database import fetch_monitors, set_monitor_status, fetch_selectors, create_selector, create_monitor
+from webtracker.database import database as db
 from .selections import change_monitor_status, add_monitor
+
+
 
 def check_existing_selectors(url):
     print(url)
     domain = tldextract.extract(url)
     print(domain)
-    selectors = fetch_selectors(domain.domain)
+    selectors = db.fetch_selectors(domain.domain)
     if not selectors:
         return False
     return selectors
@@ -58,7 +60,7 @@ def main_menu():
                     print("Unknown selection. Please choose another.")
 
         elif option == "3":
-            monitors = fetch_monitors(True)
+            monitors = db.fetch_monitors(True)
             for monitor in monitors:
                 print(f"Name: {monitor['name']}. Last known price: {monitor['last_extracted_value']}. Threshold: {monitor['threshold_value']}")
                 print("-"*30)

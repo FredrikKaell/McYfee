@@ -198,14 +198,14 @@ def tracker(daemon: bool = True):
 
         if daemon is True:        
             print(config.colors.OKBLUE)
+            print('-'*60)
+            print(f'Running as daemon. Refreshing in {POLL_RATE} seconds. Iteration counter: {counter}')
+            print('-'*60)
+            print(config.colors.ENDC)
             if counter % 10 == 0:
                 timed_operation(performance_report_job)
                 print('*** Performance report refreshed ***')
             counter +=1
-            print('-'*60)
-            print(f'Running as daemon. Refreshing in {POLL_RATE} seconds.')
-            print('-'*60)
-            print(config.colors.ENDC)
             time.sleep(POLL_RATE)
         else:
             timed_operation(performance_report_job)

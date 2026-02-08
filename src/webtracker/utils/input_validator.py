@@ -16,6 +16,10 @@ class CreateSelector(BaseModel):
     css_selector : str
     url_pattern : str
     description : str
+    
+class CreateReport(BaseModel):
+    monitor_id : int
+    days : int
 
 def check_user_input(model : type[BaseModel], user_input : dict):
     fields = model.model_fields.keys()

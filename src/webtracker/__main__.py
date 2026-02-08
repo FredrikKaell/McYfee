@@ -6,7 +6,7 @@ if __name__ == '__main__':
         run()
 
     except KeyboardInterrupt:
-        log(f'Application was stopped with keyboard interrupt.')
+        print(f'Application was stopped with keyboard interrupt.')
 
     except Exception as err:
-        error(f'Application stopped with following: {err}')
+        print(f'Application stopped with following: {err}')

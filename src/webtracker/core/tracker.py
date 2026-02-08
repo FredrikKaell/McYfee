@@ -3,6 +3,7 @@ import datetime
 from datetime import timedelta
 import re
 import json
+from weakref import ref
 
 # Emil only
 import urllib3
@@ -13,7 +14,7 @@ from webtracker.database import database as db
 from webtracker.scraper import parser
 from webtracker.notifications import discord_notifier
 from webtracker.utils.performance import timed_operation,performance_report_job
-from webtracker import config
+from webtracker.config import colors, DEBUG_MODE, POLL_RATE, REFRESH_PERFORMANCE_REPORT
 
 from webtracker.utils.logger import AppLogger
 log = AppLogger().get_logger()
@@ -24,10 +25,6 @@ from concurrent.futures import ThreadPoolExecutor
 
 executor = ThreadPoolExecutor(max_workers=5)
 
-
-DEBUG_MODE = False
-
-POLL_RATE = 60
 
 
 
@@ -190,21 +187,21 @@ def tracker(daemon: bool = True):
 
                 
                 if next_check <= date_time:
-                    print(config.colors.OKCYAN)
+                    print(colors.OKCYAN)
                     print('Detected trigger to execute worker!!')
-                    print(config.colors.ENDC)
+                    print(colors.ENDC)
 
                     executor.submit(lambda: timed_operation(worker_function, row))
 
         if daemon is True:        
-            print(config.colors.OKBLUE)
+            print(colors.OKBLUE)
             print('-'*60)
             print(f'Running as daemon. Refreshing in {POLL_RATE} seconds. Iteration counter: {counter}')
             print('-'*60)
-            print(config.colors.ENDC)
-            if counter % 10 == 0:
+            print(colors.ENDC)
+            if counter % REFRESH_PERFORMANCE_REPORT == 0:
                 timed_operation(performance_report_job)
-                print('*** Performance report refreshed ***')
+                print(f'*** Performance report refreshed (refreshing every {REFRESH_PERFORMANCE_REPORT} iteration.) ***')
             counter +=1
             time.sleep(POLL_RATE)
         else:

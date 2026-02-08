@@ -29,6 +29,16 @@ DB_CONFIG = {
 'database': os.getenv('DB_NAME')
 }
 
+# Tracker settings
+# Debug mode prints lots of more information which can help troubleshooting
+DEBUG_MODE = False
+
+# Poll rate determines the refresh rate to poll records from databas to check for monitors to trigger
+POLL_RATE = 60
+
+# This determines how many iterations before the performance report gets refreshed
+REFRESH_PERFORMANCE_REPORT = 10
+
 # === TEXT COLORS ===
 class colors:
     HEADER = '\033[95m'

@@ -4,18 +4,24 @@ from datetime import timedelta
 import re
 import json
 
+# Emil only
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
 import database as db
 from parser import parse
 from notifier import DiscordNotifier
 
 from concurrent.futures import ThreadPoolExecutor
 
+from performance import timed_operation,performance_report_job
+
 executor = ThreadPoolExecutor(max_workers=5)
 
 
 DEBUG_MODE = False
 
-POLL_RATE = 10
+POLL_RATE = 60
 
 
 class colors:
@@ -48,14 +54,20 @@ def worker_function(row):
 
     print(f'Worker started: {row_name}')
 
-    # Performing task
-    selector = {
-        "css_selector": css_selector,
-        "xpath": xpath,
-    }
+    current_db_value = row['last_extracted_value']  # Fecthing current value which will later turn into previous
+    if current_db_value and isinstance(current_db_value, str):
+        try:
+            current_db_value = json.loads(current_db_value)
+        except json.JSONDecodeError:
+            current_db_value = None
 
     try:
-        fetched_value = parse(url, selector)
+        # Performing scraping task
+        selector = {
+            "css_selector": css_selector,
+            "xpath": xpath,
+        }
+        fetched_value = timed_operation(parse, url, selector)
         print(f'Fetched price for {row_name}: {fetched_value}')
 
         fetched_value_regex = re.search(r'(\d[\d\s.,]*\d|\d+)', fetched_value)
@@ -69,13 +81,22 @@ def worker_function(row):
                 print('Monitored value is under the threshold value!!')
                 print('Trigger Notifier!!')
                 was_triggered = True
+                previous_price = None
+                change_percent = None
 
-                send_notification(
+                if current_db_value and current_db_value.get('current'):
+                    previous_price = current_db_value['current']
+                    change_percent = ((fetched_price - previous_price) / previous_price * 100)
+
+                timed_operation(
+                    send_notification,
                     notification_type=row.get('notification_type'),
                     notification_config=row.get('notification_config'),
                     monitor_name=row_name,
                     threshold=threshold,
                     current_price=fetched_price,
+                    previous_price=previous_price,
+                    change_percent=change_percent, 
                     url=url,
                     interval=interval,
                     monitor_id=row_id,
@@ -89,19 +110,26 @@ def worker_function(row):
             print(f'Could not extract value from {fetched_value}')
             return None
 
-        # Creating a snapshot record 
-        to_snapshots = {
-        'monitor_name':row_name,
-        'threshold':float(threshold),
-        'current':float(fetched_price),
-        'url':url,
-        'interval':interval,
-        'checked_time':date_time.isoformat()
+        extract = {
+            'monitor_name':row_name,
+            'threshold':float(threshold),
+            'current':float(fetched_price),
+            'url':url,
+            'interval':interval,
+            'checked_time':date_time.isoformat()
         }
-        create_snap = db.create_snapshot(row_id,to_snapshots,was_triggered)
+
+        db.update_monitor_values(
+            monitor_id=row_id,
+            last_extracted_value=extract,          
+            previous_extracted_value=current_db_value,
+            last_changed_at=date_time if was_triggered else None
+        )
+
+
+        create_snap = db.create_snapshot(row_id,extract,was_triggered)
         print(f'Snapshot record with id {create_snap} was created.')
 
-        print(f'Worker done: {row_name}')
         return row['id']
 
     except Exception as err:
@@ -110,6 +138,7 @@ def worker_function(row):
     finally:
         update_last_check = db.update_monitor_last_check(row_id)
         print(f'{update_last_check} row for last_check for {row_name} updated in db')
+        print(f'Worker done: {row_name}')
 
 
 
@@ -169,34 +198,50 @@ def tracker(daemon: bool = True):
                 
                 if next_check <= date_time:
                     print(colors.OKCYAN)
-                    print('Trigger hit!!')
+                    print('Detected trigger to execute worker!!')
                     print(colors.ENDC)
 
-                    executor.submit(worker_function, row)
+                    executor.submit(lambda: timed_operation(worker_function, row))
 
         if daemon is True:        
             print(colors.OKBLUE)
-            print(f'Chillar i {POLL_RATE} sekunder.')
+            timed_operation(performance_report_job)
+            print('-'*60)
+            print(f'Running as daemon. Refreshing in {POLL_RATE} seconds.')
+            print('-'*60)
             print(colors.ENDC)
             time.sleep(POLL_RATE)
         else:
+            timed_operation(performance_report_job)
             break
 
 
-def send_notification(notification_type, notification_config, monitor_name, threshold, current_price, url, interval, monitor_id, timestamp):
+def send_notification(notification_type: str, notification_config: str, monitor_name: str, threshold: float, current_price: float, url: str, interval: int, monitor_id: int, timestamp: datetime.datetime, previous_price: float = None, change_percent: float = None):
     try:
         config = json.loads(notification_config)
         
-        # Create message
-        message = f'''
-**{timestamp.strftime('%Y-%m-%d %H:%M:%S')}**
-The monitored price for **"{monitor_name}"** has dropped below threshold!
-Threshold: __{threshold}__
-Current price: __{current_price}__
-URL: {url}
-Check interval: {interval} minutes
-_Monitor {monitor_id} will be deactivated._
-        '''
+        message_parts = [
+            f"**{timestamp.strftime('%Y-%m-%d %H:%M:%S')}**",
+            f"The monitored price for **\"{monitor_name}\"** has dropped below threshold!",
+            f"Threshold: __{threshold}__ SEK",
+        ]
+        
+        if previous_price is not None:
+            message_parts.append(f"Previous: __{previous_price}__ SEK")
+            message_parts.append(f"Current: __{current_price}__ SEK")
+            if change_percent is not None:
+                message_parts.append(f"Change: __{change_percent:.1f}%__")
+        else:
+            message_parts.append(f"Current price: __{current_price}__ SEK")
+        
+        message_parts.extend([
+            f"URL: {url}",
+            f"Check interval: {interval} minutes",
+            f"_Monitor {monitor_id} will be deactivated._"
+        ])
+        
+        message = '\n'.join(message_parts)
+        
         
         # Send based on type
         if notification_type == 'discord':

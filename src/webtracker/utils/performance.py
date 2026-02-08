@@ -1,6 +1,6 @@
 import datetime
 
-import database as db
+from webtracker import database as db
 from pathlib import Path
 
 

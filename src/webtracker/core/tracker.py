@@ -8,13 +8,16 @@ import json
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
+
 from webtracker.database import database as db
-from parser import parse
-from notifier import DiscordNotifier
+from webtracker.scraper import parser
+from webtracker.notifications import discord_notifier
+from webtracker.utils.performance import timed_operation,performance_report_job
+from webtracker import config
 
 from concurrent.futures import ThreadPoolExecutor
 
-from performance import timed_operation,performance_report_job
+
 
 executor = ThreadPoolExecutor(max_workers=5)
 
@@ -22,20 +25,6 @@ executor = ThreadPoolExecutor(max_workers=5)
 DEBUG_MODE = False
 
 POLL_RATE = 60
-
-
-class colors:
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKCYAN = '\033[96m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
-
-
 
 
 
@@ -67,7 +56,7 @@ def worker_function(row):
             "css_selector": css_selector,
             "xpath": xpath,
         }
-        fetched_value = timed_operation(parse, url, selector)
+        fetched_value = timed_operation(parser.parse, url, selector)
         print(f'Fetched price for {row_name}: {fetched_value}')
 
         fetched_value_regex = re.search(r'(\d[\d\s.,]*\d|\d+)', fetched_value)
@@ -197,19 +186,19 @@ def tracker(daemon: bool = True):
 
                 
                 if next_check <= date_time:
-                    print(colors.OKCYAN)
+                    print(config.colors.OKCYAN)
                     print('Detected trigger to execute worker!!')
-                    print(colors.ENDC)
+                    print(config.colors.ENDC)
 
                     executor.submit(lambda: timed_operation(worker_function, row))
 
         if daemon is True:        
-            print(colors.OKBLUE)
+            print(config.colors.OKBLUE)
             timed_operation(performance_report_job)
             print('-'*60)
             print(f'Running as daemon. Refreshing in {POLL_RATE} seconds.')
             print('-'*60)
-            print(colors.ENDC)
+            print(config.colors.ENDC)
             time.sleep(POLL_RATE)
         else:
             timed_operation(performance_report_job)
@@ -252,7 +241,7 @@ def send_notification(notification_type: str, notification_config: str, monitor_
                 return False
             
             print(f'Sending Discord notification')
-            notifier = DiscordNotifier(webhook_url)
+            notifier = discord_notifier.DiscordNotifier(webhook_url)
             notifier.send(message)
             print(f'Discord notification sent!')
             return True

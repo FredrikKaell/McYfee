@@ -134,6 +134,7 @@ def worker_function(row):
 
 
 def tracker(daemon: bool = True):
+    counter=0
     while True:
         date_time = datetime.datetime.now()
 
@@ -197,7 +198,10 @@ def tracker(daemon: bool = True):
 
         if daemon is True:        
             print(config.colors.OKBLUE)
-            timed_operation(performance_report_job)
+            if counter % 10 == 0:
+                timed_operation(performance_report_job)
+                print('*** Performance report refreshed ***')
+            counter =+1
             print('-'*60)
             print(f'Running as daemon. Refreshing in {POLL_RATE} seconds.')
             print('-'*60)

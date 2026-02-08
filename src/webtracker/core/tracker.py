@@ -3,12 +3,6 @@ import datetime
 from datetime import timedelta
 import re
 import json
-from weakref import ref
-
-# Emil only
-import urllib3
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-
 
 from webtracker.database import database as db
 from webtracker.scraper import parser
@@ -20,15 +14,11 @@ from webtracker.utils.logger import AppLogger
 log = AppLogger().get_logger()
 
 from concurrent.futures import ThreadPoolExecutor
-
-
-
 executor = ThreadPoolExecutor(max_workers=5)
 
 
-
-
 def worker_function(row):
+    # Worker is performing tasks when tracker finds trigger.
     date_time = datetime.datetime.now()
     was_triggered = False
     fetched_price = None 
@@ -131,6 +121,7 @@ def worker_function(row):
 
 
 def tracker(daemon: bool = True):
+    # Tracker is polling the db for tasks to execute
     counter=0
     while True:
         date_time = datetime.datetime.now()
@@ -210,6 +201,7 @@ def tracker(daemon: bool = True):
 
 
 def send_notification(notification_type: str, notification_config: str, monitor_name: str, threshold: float, current_price: float, url: str, interval: int, monitor_id: int, timestamp: datetime.datetime, previous_price: float = None, change_percent: float = None):
+    # Notification gets sent to predetermined destination.
     try:
         config = json.loads(notification_config)
         

@@ -9,9 +9,7 @@ def check_existing_selectors(url):
     """
     Function for checking if there exists a selector for chosen URL.
     """
-    print(url)
     domain = tldextract.extract(url)
-    print(domain)
     selectors = fetch_selectors(domain.domain)
     if not selectors:
         return False

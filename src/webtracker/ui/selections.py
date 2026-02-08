@@ -1,9 +1,10 @@
 """
 Module for handling functions that are accessed through CLI menu
 """
-
-from webtracker.database.database import fetch_monitors, set_monitor_status, fetch_selectors, create_selector, create_monitor
-from .helper import check_existing_selectors
+import tldextract
+from webtracker.database import fetch_monitors, set_monitor_status, fetch_selectors, create_selector, create_monitor
+from .helper import check_existing_selectors, get_selector_by_id
+from .validator import check_user_input, CreateMonitor
 
 
 def change_monitor_status(active_monitors = True):
@@ -88,6 +89,7 @@ def add_monitor():
             try:
                 if int(selection) in allowed:
                     selected_selector = get_selector_by_id(existing_selectors, int(selection))
+                    selector_id = selected_selector['id']
                     break
                 else:
                     print("Unvalid selection!")
@@ -101,10 +103,22 @@ def add_monitor():
         css_selector = input("Please enter CSS Selector (leave empty if not applicable): ")
         desc = input("Description: ")
 
-        selected_selector = create_selector(selector_name, css_selector, xpath, tldextract.extract(url).domain, desc)
-
-    notification = input("Activate notification (0/1): ")
+        selector_id = create_selector(selector_name, css_selector, xpath, tldextract.extract(url).domain, desc)
     threshold = input("Please enter threshold value: ")
     interval = input("Enter interval (minutes): ")
 
-    create_monitor(name=name, url=url, selector_id=selected_selector['id'], monitor_type='price', threshold=threshold, check_interval=interval, is_active=1)
+    user_input = {
+        "name" : name,
+        "url" : url,
+        "selector_id" : selector_id,
+        "monitor_type" : "price",
+        "threshold" : threshold,
+        "check_intervall" : interval,
+        "is_active" : 1,
+        "notification_id" : 1
+    }
+
+    monitor_input = check_user_input(CreateMonitor, user_input=user_input)
+    print(monitor_input)
+    print(str(monitor_input.url))
+    # create_monitor(name=name, url=url, selector_id=selected_selector['id'], monitor_type='price', threshold=threshold, check_interval=interval, is_active=1)

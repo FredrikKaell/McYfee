@@ -96,7 +96,7 @@ McYfee is built to be able to track virtually anything visible in HTML or struct
 6. **Notification** - Send alerts via Discord (or other channels) when conditions are met
 7. **Minimal Storage** - Only extracted values are stored, not entire HTML pages
 
-**IMPORTANT:** MVP version supports only Discord notifications.
+**IMPORTANT:** MVP version supports only CSS selectors and Discord notifications.
 
 **Example:** Monitor 50 products on Elgiganten using the same price selector - if the selector changes, update it once centrally and all 50 monitors are automatically fixed.
 
@@ -170,11 +170,11 @@ Before you begin, ensure you have the following installed on your system:
 
 4. **MySQL**
    - MySQL: [Download MySQL](https://dev.mysql.com/downloads/)
-     Note: Only optional if you intend to connect to an already hosted McYfee database.
+   - Note: Only optional if you intend to connect to an already hosted McYfee database, otherwise database needs to be setup, making this software mandatory.
 
 5. **Discord Account** (for notifications)
    - Create a Discord server or use an existing one
-   - Set up a webhook (instructions in Configuration section)
+   - Set up a webhook
 
 ### Installation
 

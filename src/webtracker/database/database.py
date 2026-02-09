@@ -6,12 +6,12 @@ from datetime import datetime
 from webtracker.config import DB_CONFIG
 
 from webtracker.utils.logger import AppLogger
+
 log = AppLogger().get_logger()
 
 
+""" Create connection """
 
-
-''' Create connection '''
 
 def db_connection():
     # Connect to DB
@@ -23,27 +23,27 @@ def db_connection():
         raise
 
 
+""" DB Read actions """
 
-''' DB Read actions '''
 
 def fetch_monitors(active: bool = True):
     conn = db_connection()
     cursor = conn.cursor(dictionary=True)
 
     try:
-        query = 'SELECT * FROM monitors WHERE is_active = %s'
+        query = "SELECT * FROM monitors WHERE is_active = %s"
 
         cursor.execute(query, (1 if active else 0,))
         result = cursor.fetchall()
         return result
 
     except Exception as err:
-        log.error(f'Error: {err}')   
-        return None 
+        log.error(f"Error: {err}")
+        return None
 
     finally:
         cursor.close()
-        conn.close()  
+        conn.close()
 
 
 def fetch_monitor_by_id(id: int = None):
@@ -51,19 +51,19 @@ def fetch_monitor_by_id(id: int = None):
     cursor = conn.cursor(dictionary=True)
 
     try:
-        query = 'SELECT * FROM monitors WHERE id = %s'
+        query = "SELECT * FROM monitors WHERE id = %s"
 
-        cursor.execute(query, (id, ))
+        cursor.execute(query, (id,))
         result = cursor.fetchall()
         return result
 
     except Exception as err:
-        log.error(f'Error: {err}')   
-        return None 
+        log.error(f"Error: {err}")
+        return None
 
     finally:
         cursor.close()
-        conn.close()  
+        conn.close()
 
 
 def fetch_all_monitors():
@@ -71,19 +71,19 @@ def fetch_all_monitors():
     cursor = conn.cursor(dictionary=True)
 
     try:
-        query = 'SELECT * FROM monitors'
+        query = "SELECT * FROM monitors"
 
         cursor.execute(query)
         result = cursor.fetchall()
         return result
 
     except Exception as err:
-        log.error(f'Error: {err}') 
-        return None    
+        log.error(f"Error: {err}")
+        return None
 
     finally:
         cursor.close()
-        conn.close()      
+        conn.close()
 
 
 def fetch_selectors(url_pattern: str = None):
@@ -92,22 +92,22 @@ def fetch_selectors(url_pattern: str = None):
 
     try:
         if url_pattern:
-            query = 'SELECT * FROM selectors WHERE url_pattern LIKE %s'
-            cursor.execute(query, (f'%{url_pattern}%',))
+            query = "SELECT * FROM selectors WHERE url_pattern LIKE %s"
+            cursor.execute(query, (f"%{url_pattern}%",))
         else:
-            query = 'SELECT * FROM selectors'
+            query = "SELECT * FROM selectors"
             cursor.execute(query)
-        
+
         result = cursor.fetchall()
         return result
 
     except Exception as err:
-        log.error(f'Error: {err}')  
-        return None  
+        log.error(f"Error: {err}")
+        return None
 
     finally:
         cursor.close()
-        conn.close()  
+        conn.close()
 
 
 def fetch_notifications(active: bool = True):
@@ -115,29 +115,29 @@ def fetch_notifications(active: bool = True):
     cursor = conn.cursor(dictionary=True)
 
     try:
-        query = 'SELECT * FROM notifications WHERE active = %s'
+        query = "SELECT * FROM notifications WHERE active = %s"
 
         cursor.execute(query, (1 if active else 0,))
         result = cursor.fetchall()
         return result
 
     except Exception as err:
-        log.error(f'Error: {err}') 
-        return None   
+        log.error(f"Error: {err}")
+        return None
 
     finally:
         cursor.close()
-        conn.close()  
+        conn.close()
 
 
-def fetch_monitors_poller(type: str = 'all_active'):
+def fetch_monitors_poller(type: str = "all_active"):
     # Fetching all monitors in active state that has connected selector and notification
     # With option 'all_due' we're only showing monitors that are ready to be triggered!
     conn = db_connection()
     cursor = conn.cursor(dictionary=True)
-    
-    try: 
-        query = '''
+
+    try:
+        query = """
             SELECT
                 m.id,
                 m.name,
@@ -162,34 +162,35 @@ def fetch_monitors_poller(type: str = 'all_active'):
                 INNER JOIN selectors as s on s.id = m.selector_id
                 INNER JOIN notifications as n on n.id = m.notification_id
                 WHERE is_active = 1
-        '''
+        """
 
-        if type == 'all_due':  
-            query += '''
+        if type == "all_due":
+            query += """
                     AND (
                     m.last_check_at IS NULL 
                     OR TIMESTAMPDIFF(MINUTE , m.last_check_at, NOW()) >= m.check_interval
                     )
-            '''
+            """
         cursor.execute(query)
         result = cursor.fetchall()
         return result
 
     except Exception as err:
-        log.error(f'Error: {err}')   
-        return None 
+        log.error(f"Error: {err}")
+        return None
 
     finally:
         cursor.close()
         conn.close()
 
+
 def fetch_snapshots(monitor_id: str = None):
     # Fetching records from the snapshots table. Pass a monitor id if you want!
     conn = db_connection()
     cursor = conn.cursor(dictionary=True)
-    
-    try: 
-        query = '''
+
+    try:
+        query = """
             SELECT
                 s.monitor_id,
                 s.extracted_value,
@@ -202,73 +203,97 @@ def fetch_snapshots(monitor_id: str = None):
                 FROM snapshots as s
                 INNER JOIN monitors as m on s.monitor_id = m.id
                 INNER JOIN notifications as n on m.notification_id = n.id
-        '''
+        """
 
         if monitor_id:
-            query += ' WHERE s.monitor_id = %s ORDER BY s.created_at DESC'
+            query += " WHERE s.monitor_id = %s ORDER BY s.created_at DESC"
             cursor.execute(query, (monitor_id,))
         else:
-            query += ' ORDER BY s.created_at DESC'
-            cursor.execute(query)  
-            
+            query += " ORDER BY s.created_at DESC"
+            cursor.execute(query)
+
         result = cursor.fetchall()
         return result
 
     except Exception as err:
-        log.error(f'Error: {err}')   
-        return None 
+        log.error(f"Error: {err}")
+        return None
 
     finally:
         cursor.close()
         conn.close()
 
 
+""" Insert, update, delete actions """
 
-''' Insert, update, delete actions '''
 
-def create_selector(name: str, css_selector: str, xpath: str, url_pattern: str, description: str):
+def create_selector(
+    name: str, css_selector: str, xpath: str, url_pattern: str, description: str
+):
     # Create a new selector
     conn = db_connection()
     cursor = conn.cursor()
-    
-    try: 
-        query = '''
+
+    try:
+        query = """
             INSERT INTO 
             selectors (name, css_selector, xpath, url_pattern, description) 
             VALUES (%s, %s, %s, %s, %s)
-        '''
+        """
         cursor.execute(query, (name, css_selector, xpath, url_pattern, description))
         conn.commit()
         return cursor.lastrowid
 
     except Exception as err:
-        log.error(f'Error: {err}') 
-        conn.rollback()  
-        return None 
+        log.error(f"Error: {err}")
+        conn.rollback()
+        return None
 
     finally:
         cursor.close()
         conn.close()
 
-def create_monitor(name: str, url: str, selector_id: int, monitor_type: str, threshold: int, check_interval: int, is_active: int, notification_id: int):
+
+def create_monitor(
+    name: str,
+    url: str,
+    selector_id: int,
+    monitor_type: str,
+    threshold: int,
+    check_interval: int,
+    is_active: int,
+    notification_id: int,
+):
     # Create a new monitor
     conn = db_connection()
     cursor = conn.cursor()
-    
-    try: 
-        query = '''
+
+    try:
+        query = """
             INSERT INTO 
             monitors (name, url, selector_id, type, threshold_value, check_interval, is_active, notification_id) 
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-        '''
-        cursor.execute(query, (name, url, selector_id, monitor_type, threshold, check_interval, is_active, notification_id))
+        """
+        cursor.execute(
+            query,
+            (
+                name,
+                url,
+                selector_id,
+                monitor_type,
+                threshold,
+                check_interval,
+                is_active,
+                notification_id,
+            ),
+        )
         conn.commit()
         return cursor.rowcount
 
     except Exception as err:
-        log.error(f'Error: {err}') 
-        conn.rollback()  
-        return None 
+        log.error(f"Error: {err}")
+        conn.rollback()
+        return None
 
     finally:
         cursor.close()
@@ -279,21 +304,21 @@ def create_notification(type: str, config: dict, active: str = 1):
     # Create a new notification
     conn = db_connection()
     cursor = conn.cursor()
-    
-    try: 
-        query = '''
+
+    try:
+        query = """
             INSERT INTO 
             notifications (type, config, active) 
             VALUES (%s, %s, %s)
-        '''
+        """
         cursor.execute(query, (type, json.dumps(config), active))
         conn.commit()
         return cursor.lastrowid
 
     except Exception as err:
-        log.error(f'Error: {err}') 
-        conn.rollback()  
-        return None 
+        log.error(f"Error: {err}")
+        conn.rollback()
+        return None
 
     finally:
         cursor.close()
@@ -304,99 +329,110 @@ def create_snapshot(monitor_id: int, extracted_value: dict, was_triggered: bool)
     # Create a snapshot record
     conn = db_connection()
     cursor = conn.cursor()
-    
-    try: 
-        query = '''
+
+    try:
+        query = """
             INSERT INTO 
             snapshots (monitor_id, extracted_value, was_triggered) 
             VALUES (%s, %s, %s)
-        '''
+        """
         cursor.execute(query, (monitor_id, json.dumps(extracted_value), was_triggered))
         conn.commit()
         return cursor.lastrowid
 
-
     except Exception as err:
-        log.error(f'Error: {err}') 
-        conn.rollback()  
-        return None 
+        log.error(f"Error: {err}")
+        conn.rollback()
+        return None
 
     finally:
         cursor.close()
         conn.close()
 
 
-def set_monitor_status(id: int= None, status: int = 0):
+def set_monitor_status(id: int = None, status: int = 0):
     # Upate status on monitor
     conn = db_connection()
     cursor = conn.cursor()
 
     try:
-        query = 'UPDATE monitors SET is_active = %s where id = %s'
+        query = "UPDATE monitors SET is_active = %s where id = %s"
         cursor.execute(query, (status, id))
         conn.commit()
         return cursor.rowcount
 
     except Exception as err:
-        log.error(f'Error: {err}') 
-        conn.rollback()  
-        return None 
+        log.error(f"Error: {err}")
+        conn.rollback()
+        return None
 
     finally:
         cursor.close()
         conn.close()
 
 
-def set_notification_status(id: int= None, status: int = 0):
+def set_notification_status(id: int = None, status: int = 0):
     # Upate status on notification
     conn = db_connection()
     cursor = conn.cursor()
 
     try:
-        query = 'UPDATE notifications SET is_active = %s where id = %s'
+        query = "UPDATE notifications SET is_active = %s where id = %s"
         cursor.execute(query, (status, id))
         conn.commit()
         return cursor.rowcount
 
     except Exception as err:
-        log.error(f'Error: {err}')   
+        log.error(f"Error: {err}")
         conn.rollback()
-        return None 
+        return None
 
     finally:
         cursor.close()
         conn.close()
 
 
-def update_monitor_values(monitor_id: int, last_extracted_value: dict, previous_extracted_value: dict = None, last_changed_at: datetime = None):
+def update_monitor_values(
+    monitor_id: int,
+    last_extracted_value: dict,
+    previous_extracted_value: dict = None,
+    last_changed_at: datetime = None,
+):
     # Update extracted values for a monitor.
     conn = db_connection()
     cursor = conn.cursor()
-    
+
     try:
-        query = '''
+        query = """
             UPDATE monitors 
             SET last_extracted_value = %s,
                 previous_extracted_value = %s,
                 last_changed_at = %s
             WHERE id = %s
-        '''
-        
-        cursor.execute(query, (
-            json.dumps(last_extracted_value),
-            json.dumps(previous_extracted_value) if previous_extracted_value else None,
-            last_changed_at,
-            monitor_id
-        ))
+        """
+
+        cursor.execute(
+            query,
+            (
+                json.dumps(last_extracted_value),
+                (
+                    json.dumps(previous_extracted_value)
+                    if previous_extracted_value
+                    else None
+                ),
+                last_changed_at,
+                monitor_id,
+            ),
+        )
         conn.commit()
-        
+
         return cursor.rowcount
-        
+
     except Exception as err:
         conn.rollback()
-        print(f'Error: {err}')
+        print(f"Error: {err}")
         return None
-        
+
     finally:
         cursor.close()
         conn.close()
@@ -408,14 +444,14 @@ def delete_monitor(id: int = None):
     cursor = conn.cursor()
 
     try:
-        query = 'DELETE FROM monitors where id = %s'
+        query = "DELETE FROM monitors where id = %s"
         cursor.execute(query, (id,))
         conn.commit()
         return cursor.rowcount
 
     except Exception as err:
-        log.error(f'Error: {err}')  
-        conn.rollback()  
+        log.error(f"Error: {err}")
+        conn.rollback()
         return None
 
     finally:
@@ -423,8 +459,8 @@ def delete_monitor(id: int = None):
         conn.close()
 
 
+""" DB audit field updates """
 
-''' DB audit field updates '''
 
 def update_monitor_last_check(id: int = None, timestamp: datetime = None):
     # Upate monitor set last checked
@@ -434,34 +470,35 @@ def update_monitor_last_check(id: int = None, timestamp: datetime = None):
     try:
         if timestamp is None:
             timestamp = datetime.now()
-        query = 'UPDATE monitors SET last_check_at = %s where id = %s'
+        query = "UPDATE monitors SET last_check_at = %s where id = %s"
         cursor.execute(query, (timestamp, id))
         conn.commit()
         return cursor.rowcount
 
     except Exception as err:
-        log.error(f'Error: {err}')   
-        conn.rollback() 
+        log.error(f"Error: {err}")
+        conn.rollback()
         return None
 
     finally:
         cursor.close()
         conn.close()
 
-def save_performance_record(operation_name: str,start_time,end_time):
+
+def save_performance_record(operation_name: str, start_time, end_time):
     conn = db_connection()
     cursor = conn.cursor()
 
-    query = 'INSERT INTO performance (operation,start_time,end_time) VALUES(%s,%s,%s)'
-     
+    query = "INSERT INTO performance (operation,start_time,end_time) VALUES(%s,%s,%s)"
+
     try:
-        cursor.execute(query, (operation_name.title(),start_time,end_time))
+        cursor.execute(query, (operation_name.title(), start_time, end_time))
         conn.commit()
         return cursor.rowcount
 
     except Exception as err:
-        log.error(f'Error: {err}')   
-        conn.rollback() 
+        log.error(f"Error: {err}")
+        conn.rollback()
         return None
 
     finally:
@@ -474,7 +511,7 @@ def fetch_performance_records(horizon: str = None):
     cursor = conn.cursor(dictionary=True)
 
     try:
-        query = '''
+        query = """
             SELECT 
                 p.id,
                 p.operation,
@@ -482,53 +519,52 @@ def fetch_performance_records(horizon: str = None):
                 p.end_time,
                 TIMESTAMPDIFF(MICROSECOND, p.start_time, p.end_time) / 1000000 AS operation_time
             FROM performance AS p
-        '''
+        """
 
         if horizon:
-            query += ' WHERE DATE(p.start_time) LIKE %s'
-            cursor.execute(query, (f'{horizon}%',)) 
+            query += " WHERE DATE(p.start_time) LIKE %s"
+            cursor.execute(query, (f"{horizon}%",))
         else:
             # All records
-            query += ' ORDER BY p.id DESC'
+            query += " ORDER BY p.id DESC"
             cursor.execute(query)
-              
+
         result = cursor.fetchall()
         return result
 
     except Exception as err:
-        log.error(f'Error: {err}')   
-        return None 
+        log.error(f"Error: {err}")
+        return None
 
     finally:
         cursor.close()
         conn.close()
 
 
-if __name__ == '__main__':
-    #Tester
+if __name__ == "__main__":
+    # Tester
     db_connection()
 
-    print('fetch_all_monitors():')
+    print("fetch_all_monitors():")
     for row in fetch_monitors():
-        print(f'{row}\n')
-    
-    print('fetch_monitors():')
-    for row in fetch_monitors():
-        print(f'{row}\n')
+        print(f"{row}\n")
 
-    print('fetch_monitor_by_id(id=2):')
+    print("fetch_monitors():")
+    for row in fetch_monitors():
+        print(f"{row}\n")
+
+    print("fetch_monitor_by_id(id=2):")
     for row in fetch_monitor_by_id(id=2):
-        print(f'{row}\n')
+        print(f"{row}\n")
 
-    print('fetch_selectors():')
+    print("fetch_selectors():")
     for row in fetch_selectors():
-        print(f'{row}\n')
+        print(f"{row}\n")
 
-    print('fetch_notifications():')
+    print("fetch_notifications():")
     for row in fetch_notifications():
-        print(f'{row}\n')
+        print(f"{row}\n")
 
-    print('fetch_selectors(url_pattern=elgiganten):')
-    for row in fetch_selectors(url_pattern='elgiganten'):
-        print(f'{row}\n')
-
+    print("fetch_selectors(url_pattern=elgiganten):")
+    for row in fetch_selectors(url_pattern="elgiganten"):
+        print(f"{row}\n")

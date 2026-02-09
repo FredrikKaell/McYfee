@@ -777,7 +777,6 @@ We follow **Conventional Commits** specification.
 |------|----------|
 | **Indentation** | 4 spaces (no tabs) |
 | **Quotes** | Double quotes (`"`) for strings |
-| **Type Hints** | Required for all functions |
 
 ### Code Review Guidelines
 

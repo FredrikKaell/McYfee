@@ -88,7 +88,10 @@ def create_performance_report(report_name="Performance report", horizon="today")
             times = [op["time"] for op in operations if op["operation"] == i]
             time_per_operation = sum(times)
             count_per_operation = len(times)
-            average_per_operation = time_per_operation / count_per_operation
+            if count_per_operation > 0:
+                average_per_operation = time_per_operation / count_per_operation
+            else:
+                average_per_operation = 0.0
             max_per_operation = max(times)
             min_per_operation = min(times)
 

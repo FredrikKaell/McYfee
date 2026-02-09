@@ -1,4 +1,5 @@
 import matplotlib
+
 matplotlib.use("Agg")
 
 import matplotlib.pyplot as plt
@@ -10,19 +11,21 @@ from datetime import datetime, timedelta
 import json
 
 import sys
-sys.path.insert(0, str(Path(__file__).parent.parent / 'src'))
+
+sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 from webtracker import database as db
 from webtracker.config import PROJECT_ROOT
 from webtracker.utils.performance import timed_operation, performance_report_job
 
 from webtracker.utils.logger import AppLogger
+
 log = AppLogger().get_logger()
 
-OUTPUT_DIR = PROJECT_ROOT / 'reports'
+OUTPUT_DIR = PROJECT_ROOT / "reports"
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-sns.set_theme(style='darkgrid')
+sns.set_theme(style="darkgrid")
 
 
 def create_chart(monitor_id: int = None, days: int = 30):
@@ -31,43 +34,49 @@ def create_chart(monitor_id: int = None, days: int = 30):
     try:
         snapshots = db.fetch_snapshots(monitor_id)
         if not snapshots:
-            log.warning('No data')
+            log.warning("No data")
             return
 
         # Fetch data
         data = []
         for snap in snapshots:
             try:
-                extracted = json.loads(snap['extracted_value']) if isinstance(snap['extracted_value'], str) else snap['extracted_value']
-                if extracted.get('current'):
-                    data.append({
-                        'datetime': pd.to_datetime(snap['created_at']),
-                        'price': extracted['current'],
-                        'monitor': snap['name']
-                    })
+                extracted = (
+                    json.loads(snap["extracted_value"])
+                    if isinstance(snap["extracted_value"], str)
+                    else snap["extracted_value"]
+                )
+                if extracted.get("current"):
+                    data.append(
+                        {
+                            "datetime": pd.to_datetime(snap["created_at"]),
+                            "price": extracted["current"],
+                            "monitor": snap["name"],
+                        }
+                    )
             except Exception as err:
-                log.error(f'Error: {err}')
+                log.error(f"Error: {err}")
                 return None
 
         df = pd.DataFrame(data)
 
         # Filter by days
-        df['date'] = df['datetime'].dt.date
+        df["date"] = df["datetime"].dt.date
         cutoff = datetime.now() - timedelta(days=days)
-        df = df[df['datetime'] >= cutoff]
+        df = df[df["datetime"] >= cutoff]
 
         if df.empty:
-            print(f'No data for last {days} days')
+            print(f"No data for last {days} days")
             return
 
         # Create date-only column for grouping
-        df['date_only'] = df['datetime'].dt.date
+        df["date_only"] = df["datetime"].dt.date
 
         # Group by date and monitor, calculate daily average
-        df_daily = df.groupby(['date_only', 'monitor'])['price'].mean().reset_index()
+        df_daily = df.groupby(["date_only", "monitor"])["price"].mean().reset_index()
 
         # Convert date_only to datetime for plotting
-        df_daily['date'] = pd.to_datetime(df_daily['date_only'])
+        df_daily["date"] = pd.to_datetime(df_daily["date_only"])
 
         if days <= 7:
             figsize = (14, 6)
@@ -88,18 +97,22 @@ def create_chart(monitor_id: int = None, days: int = 30):
         date_range_start = datetime.now() - timedelta(days=days)
         date_range_end = datetime.now()
 
-
-
         if monitor_id:
             # Single monitor
-            plt.plot(df_daily['date'], df_daily['price'], marker='o', linewidth=2)
+            plt.plot(df_daily["date"], df_daily["price"], marker="o", linewidth=2)
             title = f"{df['monitor'].iloc[0]} - Last {days} Days"
             filename = f"{df['monitor'].iloc[0].replace(' ', '_')}_{days}days.png"
         else:
             # All monitors
-            for monitor in df['monitor'].unique():
-                monitor_df = df[df['monitor'] == monitor]
-                plt.plot(monitor_df['date'], monitor_df['price'], marker='o', linewidth=2, label=monitor)
+            for monitor in df["monitor"].unique():
+                monitor_df = df[df["monitor"] == monitor]
+                plt.plot(
+                    monitor_df["date"],
+                    monitor_df["price"],
+                    marker="o",
+                    linewidth=2,
+                    label=monitor,
+                )
             plt.legend()
             title = f"All Monitors - Last {days} Days"
             filename = f"all_monitors_{days}days.png"
@@ -110,13 +123,13 @@ def create_chart(monitor_id: int = None, days: int = 30):
         # Format x-axis
         ax = plt.gca()
         ax.xaxis.set_major_locator(DayLocator(interval=interval))
-        ax.xaxis.set_major_formatter(DateFormatter('%Y-%m-%d'))
+        ax.xaxis.set_major_formatter(DateFormatter("%Y-%m-%d"))
 
-        plt.xlabel('Date', fontsize=11)
-        plt.ylabel('Price (SEK)', fontsize=11)
-        plt.title(title, fontweight='bold', fontsize=13)
+        plt.xlabel("Date", fontsize=11)
+        plt.ylabel("Value", fontsize=11)
+        plt.title(title, fontweight="bold", fontsize=13)
         plt.grid(alpha=0.3)
-        plt.xticks(rotation=45, ha='right')
+        plt.xticks(rotation=45, ha="right")
         plt.tight_layout()
 
         # Save
@@ -124,14 +137,14 @@ def create_chart(monitor_id: int = None, days: int = 30):
         plt.savefig(filepath, dpi=300)
         plt.close()
 
-        print(f'Saved: {filepath}')
+        print(f"Saved: {filepath}")
 
     except Exception as err:
-        log.error(f'Error: {err}')
-        plt.close('all')   
-        return None 
+        log.error(f"Error: {err}")
+        plt.close("all")
+        return None
 
 
-if __name__ == '__main__':
-    timed_operation(create_chart,days=3)
-    timed_operation(create_chart,monitor_id=20,days=3)
+if __name__ == "__main__":
+    timed_operation(create_chart, days=30)
+    timed_operation(create_chart, monitor_id=20, days=30)

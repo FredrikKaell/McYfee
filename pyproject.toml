@@ -34,6 +34,7 @@ dependencies = [
 "pydantic_core>=2.41.5",
 "pyflakes>=3.4.0",
 "pyparsing>=3.3.2",
+"pytest>=9.0.2",
 "python-dateutil>=2.9.0.post0",
 "python-dotenv>=1.2.1",
 "requests>=2.32.5",
@@ -53,4 +54,4 @@ dev = ["pytest", "flake8", "pytest-cov"]
 # TO install: pip install .[dev]
 
 [project.scripts]
-mcyfee = "mcyfee.main:run"
+mcyfee = "webtracker.main:run"

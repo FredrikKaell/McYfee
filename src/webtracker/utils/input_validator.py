@@ -18,7 +18,7 @@ class CreateSelector(BaseModel):
     description : str
     
 class CreateReport(BaseModel):
-    monitor_id : int
+    monitor_id : Optional[int] = None
     days : int
 
 def check_user_input(model : type[BaseModel], user_input : dict):

@@ -657,15 +657,15 @@ feature/*, bugfix/*, hotfix/*, docs/*
 
 #### Branch Descriptions
 
-| Branch | Purpose | Protection | Auto-Deploy |
-|--------|---------|------------|-------------|
-| **main** | Production-ready code | Strict | Yes (manual approval) |
-| **DEV** | Integration and testing | Strict | No |
-| **staging** | Pre-DEV feature testing | Moderate | No |
-| **feature/** | New features | None | No |
-| **bugfix/** | Bug fixes | None | No |
-| **hotfix/** | Critical production fixes | None | No |
-| **docs/** | Documentation updates | None | No |
+| Branch | Purpose | Protection | 
+|--------|---------|------------|
+| **main** | Production-ready code | Strict |
+| **DEV** | Integration and testing | Strict |
+| **staging** | Pre-DEV feature testing | Moderate |
+| **feature/** | New features | None |
+| **bugfix/** | Bug fixes | None |
+| **hotfix/** | Critical production fixes | None |
+| **docs/** | Documentation updates | None |
 
 #### Branch Types and Naming Convention
 

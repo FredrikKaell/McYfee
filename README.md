@@ -421,13 +421,13 @@ After starting McYfee using any method, verify it's running:
 
 ```bash
 # View real-time logs
-tail -f logs/mcyfee.log
+tail -f logs/*.log
 
 # View last 50 lines
-tail -n 50 logs/mcyfee.log
+tail -n 50 logs/*log
 
 # Search logs for errors
-grep ERROR logs/mcyfee.log
+grep ERROR logs/*.log
 
 # Check daily performance report
 cat reports/performance/*.txt

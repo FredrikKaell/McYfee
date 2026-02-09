@@ -15,7 +15,7 @@ def change_monitor_status(active_monitors = True):
     """
     monitors = db.fetch_monitors(active_monitors)
 
-    if active_monitors:
+    if bool(active_monitors):
         print("Showing activate monitors")
     else:
         print("Showing deactivated monitors")
@@ -143,6 +143,7 @@ def add_monitor():
         is_active=monitor_input.is_active,
         notification_id=monitor_input.notification_id
         )
+    print(f"Monitor created for {name}!")
 
 def create_report(monitor_id : int = None, days : int = 30):
     print("Generate report")

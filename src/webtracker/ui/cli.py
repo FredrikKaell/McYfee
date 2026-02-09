@@ -62,12 +62,11 @@ def main_menu():
         elif option == "3":
             monitors = db.fetch_monitors(True)
             for monitor in monitors:
-                print(f"Name: {monitor['name']}. Last known price: {monitor['last_extracted_value']}. Threshold: {monitor['threshold_value']}")
+                print(f"Name: {monitor['name']}. Last known price: {monitor['last_extracted_value']['current']}. Threshold: {monitor['threshold_value']}")
                 print("-"*30)
                
 
         elif option == "4":
-            print("Generate report!")
             create_report()
 
         elif option == "5":

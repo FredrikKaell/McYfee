@@ -42,7 +42,7 @@ def create_performance_report(report_name="Performance report", horizon="today")
     else:
         horizon = ""
 
-    row = db.fetch_performance_records(horizon=horizon)
+    rows = db.fetch_performance_records(horizon=horizon)
     recordcount = 0
     operationtime = []
     operationtypes = []
@@ -51,13 +51,13 @@ def create_performance_report(report_name="Performance report", horizon="today")
 
     time_per_operation = 0
 
-    for row in row:
+    for row in rows:
         try:
             recordcount += 1
             operationid = row.get("id")
             operationtime.append(row.get("operation_time"))
             operationtypes.append(row.get("operation"))
-            uniqueoperationtypes = set(operationtypes)
+            
 
             operations.append(
                 {
@@ -72,6 +72,8 @@ def create_performance_report(report_name="Performance report", horizon="today")
             print(err)
             break
 
+    uniqueoperationtypes = set(operationtypes)
+    
     if recordcount == 0:
         lines.append("No records found for the selected horizon.")
         return "\n".join(lines)

@@ -72,7 +72,7 @@ def create_performance_report(report_name="Performance report", horizon="today")
             print(err)
             break
 
-    averagetime = sum(operationtime) / recordcount
+    averagetime = sum(operationtime) / recordcount if recordcount > 0 else 0.0
 
     lines.append(f"Operation record count: {recordcount}.")
     lines.append(f"Average operation time: {averagetime:.2f} s.")

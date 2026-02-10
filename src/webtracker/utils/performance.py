@@ -72,6 +72,10 @@ def create_performance_report(report_name="Performance report", horizon="today")
             print(err)
             break
 
+    if recordcount == 0:
+        lines.append("No records found for the selected horizon.")
+        return "\n".join(lines)
+
     averagetime = sum(operationtime) / recordcount if recordcount > 0 else 0.0
 
     lines.append(f"Operation record count: {recordcount}.")

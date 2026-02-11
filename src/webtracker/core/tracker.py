@@ -8,7 +8,7 @@ from webtracker.database import database as db
 from webtracker.scraper import parser
 from webtracker.notifications import discord_notifier
 from webtracker.utils.performance import timed_operation, performance_report_job
-from webtracker.config import colors, DEBUG_MODE, POLL_RATE, REFRESH_PERFORMANCE_REPORT
+from webtracker.config import colors, DEBUG_MODE, POLL_RATE, REFRESH_PERFORMANCE_REPORT, DAEMON
 
 from webtracker.utils.logger import AppLogger
 
@@ -190,7 +190,7 @@ def tracker(daemon: bool = True):
                     print("Detected trigger to execute worker!!")
                     print(colors.ENDC)
 
-                    executor.submit(lambda: timed_operation(worker_function, row))
+                    executor.submit(lambda r=row: timed_operation(worker_function, r))
 
         if daemon is True:
             print(colors.OKBLUE)
@@ -306,7 +306,7 @@ def send_notification(
 
 if __name__ == "__main__":
     try:
-        tracker(daemon=True)
+        tracker(daemon=DAEMON)
 
     except KeyboardInterrupt:
         print(f"Tracker was stopped with keyboard interrupt.")

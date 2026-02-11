@@ -12,3 +12,7 @@ eggs/
 
 /logs/
 /reports/
+
+coverage.xml
+.coverage
+htmlcov/

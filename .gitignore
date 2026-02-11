@@ -6,7 +6,7 @@ eggs/
 *.egg-info
 
 .venv/
-.env/
+.env
 .cache
 .pytest_cache/
 

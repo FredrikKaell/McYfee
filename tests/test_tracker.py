@@ -20,7 +20,7 @@ MOCK_MONITOR_ROW = {
 
 
 @patch('webtracker.utils.performance.db.save_performance_record') # Don't save real performance record
-@patch('webtracker.notifications.discord_notifier')   # Do not send real notification
+@patch('webtracker.core.tracker.send_notification')   # Do not send real notification
 @patch('webtracker.scraper.parser.parse')               # Don't fetch real webpage
 @patch('webtracker.database.database')                  # Do not not create db record
 def test_full_flow_price_below_threshold(mock_db, mock_parse, mock_notification, mock_perf):
@@ -36,7 +36,7 @@ def test_full_flow_price_below_threshold(mock_db, mock_parse, mock_notification,
     mock_notification.assert_called_once()
 
 @patch('webtracker.utils.performance.db.save_performance_record')
-@patch('webtracker.notifications.discord_notifier')
+@patch('webtracker.core.tracker.send_notification')
 @patch('webtracker.scraper.parser.parse')
 @patch('webtracker.database.database')
 def test_full_flow_price_above_threshold(mock_db, mock_parse, mock_notification, mock_perf):

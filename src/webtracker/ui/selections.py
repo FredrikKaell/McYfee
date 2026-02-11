@@ -146,13 +146,33 @@ def add_monitor():
     print(f"Monitor created for {name}!")
 
 def create_report(monitor_id : int = None, days : int = 30):
-    print("Generate report")
-    monitor_id = input("Monitor ID:")
-    days = input("Number of days to include: ")
-    data = {
-        "monitor_id" : monitor_id,
-        "days" : days
-    }
+    
+    print("Reportgenerator")
+    print("1. Check monitor ids")
+    print("2. Generate report")
+    print("3. Return")
 
-    values = input_validator.check_user_input(input_validator.CreateReport, data)
-    report_generator.create_chart(values.monitor_id, values.days)
+    
+    while True:
+        selection = input("Option: ")
+        if selection == "1":
+            monitors = db.fetch_all_monitors()
+            for monitor in monitors:
+                print(f"id: {monitor['id']}. Name: {monitor['name']}")
+        elif selection == "2":   
+            print("Generate report")
+            monitor_id = input("Monitor ID:")
+            days = input("Number of days to include: ")
+            data = {
+                "monitor_id" : monitor_id,
+                "days" : days
+            }
+            values = input_validator.check_user_input(input_validator.CreateReport, data)
+            report_generator.create_chart(values.monitor_id, values.days)
+            print("Report has been created!")
+            return 
+        elif selection == "3":
+            return
+        else:
+            print("Invalid input")
+

@@ -5,6 +5,7 @@ on:
     branches: [ "main", "DEV" ]
   push:
     branches: [ "main", "DEV", "staging"]
+  workflow_dispatch:
 
 jobs:
   test:

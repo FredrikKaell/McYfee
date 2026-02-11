@@ -4,13 +4,17 @@
 
 import logging
 from pathlib import Path
+from datetime import datetime
+
+from webtracker.config import PROJECT_ROOT
+
 class AppLogger:
     def __init__(self, name: str = "mcyfee", log_level: int = logging.INFO):
         self.name = name
         self.log_level = log_level
 
-        self.log_dir = Path("logs")
-        self.log_file = self.log_dir / "app.log"
+        self.log_dir = PROJECT_ROOT / 'logs'
+        self.log_file = self.log_dir / f"log_{datetime.now().strftime('%Y%m%d')}.log"
 
         self._ensure_log_directory()
 

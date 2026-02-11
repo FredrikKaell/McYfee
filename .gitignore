@@ -3,8 +3,16 @@ __pycache__/
 eggs/
 .eggs/
 *.egg
+*.egg-info
 
 .venv/
-.env/
+.env
 .cache
 .pytest_cache/
+
+/logs/
+/reports/
+
+coverage.xml
+.coverage
+htmlcov/

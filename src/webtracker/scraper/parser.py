@@ -40,7 +40,7 @@ def parse_with_xpath(html: str, xpath: str) -> Optional[str]:
 
 def parse(url: str, selector: Dict[str, Any]) -> Optional[str]:
     """
-    Main parser function (matches your team's contract).
+    Main parser function. 
     Fetches HTML from URL, then extracts value using xpath or css_selector.
     Returns extracted value as raw text, or None if not found / fetch failed.
     """

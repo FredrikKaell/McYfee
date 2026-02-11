@@ -2,14 +2,18 @@
 Module for creating the menu interface for the user
 """
 import tldextract
-from webtracker.database import fetch_monitors, set_monitor_status, fetch_selectors, create_selector, create_monitor
-from .selections import change_monitor_status, add_monitor
+import json
+from webtracker.database import database as db
+from webtracker.scraper import parse
+from .selections import change_monitor_status, add_monitor, create_report
+
+
 
 def check_existing_selectors(url):
     print(url)
     domain = tldextract.extract(url)
     print(domain)
-    selectors = fetch_selectors(domain.domain)
+    selectors = db.fetch_selectors(domain.domain)
     if not selectors:
         return False
     return selectors
@@ -32,7 +36,8 @@ def main_menu():
         print("2. Activate / Deactivate scraper")
         print("3. List active scrapers")
         print("4. Generate report")
-        print("5. Exit")
+        print("5. Check selector")
+        print("6. Exit")
 
         print("="*30)
 
@@ -58,16 +63,31 @@ def main_menu():
                     print("Unknown selection. Please choose another.")
 
         elif option == "3":
-            monitors = fetch_monitors(True)
+            monitors = db.fetch_monitors(True)
             for monitor in monitors:
-                print(f"Name: {monitor['name']}. Last known price: {monitor['last_extracted_value']}. Threshold: {monitor['threshold_value']}")
+                last_extracted_value = json.loads(monitor['last_extracted_value'])
+                print(f"Name: {monitor['name']}. Last known price: {last_extracted_value['current']}. Threshold: {monitor['threshold_value']}")
                 print("-"*30)
                
 
         elif option == "4":
-            print("Generating report...")
-
+            create_report()
+            
         elif option == "5":
+            print("Check selector!")
+            url = input("URL: ")
+            css_selector = input("CSS Selector: ")
+            data = {
+                "xpath" : None,
+                "css_selector" : css_selector
+            }
+            
+            res = parse(url, data)
+            print("-"*30)
+            print("Following respons was returned")
+            print(res)
+            
+        elif option == "6":
             return
 
         else:

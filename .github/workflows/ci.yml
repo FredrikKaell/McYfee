@@ -29,7 +29,14 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install pytest flake8 pytest-cov
+          if [ -f pyproject.toml ]; then
+            python -m pip install .[dev]
+          elif [ -f requirements_ci.txt ]; then
+            python -m pip install -r requirements_ci.txt
+          else
+            python -m pip install pytest flake8 pytest-cov
+          fi
+          
       - name: Flake8 (fail only fail on critical issus)
         run: |
           flake8 . \
@@ -39,16 +46,17 @@ jobs:
           --count \
           --show-source \
           --statistics
-      #- name: Pytest (with coverage)
-      #  run: |
-      #    pytest -q -m "not skip_in_ci" --cov=. --cov-report=xml --cov-report=term-missing
+
+      - name: Pytest (with coverage)
+        run: |
+          pytest -q -m "not skip_in_ci" --cov=. --cov-report=xml --cov-report=term-missing
       
-      #- name: Upload coverage XML
-      #  if: always()
-      #  uses: actions/upload-artifact@v4
-      #  with:
-      #    name: coverage-xml-${{ runner.os }}-py${{ matrix.python-version }}-${{ github.job }}-run${{ github.run_attempt }}
-      #    path: coverage.xml
-      #    if-no-files-found: warn
-      #    compression-level: 6
-      #    overwrite: false
+      - name: Upload coverage XML
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-xml-${{ runner.os }}-py${{ matrix.python-version }}-${{ github.job }}-run${{ github.run_attempt }}
+          path: coverage.xml
+          if-no-files-found: warn
+          compression-level: 6
+          overwrite: false

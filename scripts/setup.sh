@@ -25,12 +25,12 @@ else
 fi
 
 # Verify we're in the right place
-if [ ! -f "$PROJECT_DIR/requirements.txt" ] || [ ! -d "$PROJECT_DIR/src" ]; then
+if [ ! -f "$PROJECT_DIR/pyproject.toml" ] || [ ! -d "$PROJECT_DIR/src" ]; then
     log_error() {
         echo -e "${RED}[ERROR]${NC} $1"
     }
     log_error "Could not find project root!"
-    log_error "Expected to find requirements.txt and src/ directory"
+    log_error "Expected to find pyproject.toml and src/ directory"
     log_error "Current location: $PROJECT_DIR"
     exit 1
 fi

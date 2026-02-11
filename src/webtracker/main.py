@@ -23,8 +23,8 @@ def menuoptions():
     print("Choose one option!")
     print("-"*60)
     print("1. User menu")
-    print("2. Run tracker service once.")
-    print("3. Run tracker service as deamon.")
+    print("2. Run tracker service once")
+    print("3. Run tracker service as deamon")
     print("0. Exit")
     print("-"*60)
 

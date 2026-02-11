@@ -2,7 +2,9 @@
 Module for creating the menu interface for the user
 """
 import tldextract
+import json
 from webtracker.database import database as db
+from webtracker.scraper import parse
 from .selections import change_monitor_status, add_monitor, create_report
 
 
@@ -34,7 +36,8 @@ def main_menu():
         print("2. Activate / Deactivate scraper")
         print("3. List active scrapers")
         print("4. Generate report")
-        print("5. Exit")
+        print("5. Check selector")
+        print("6. Exit")
 
         print("="*30)
 
@@ -62,14 +65,29 @@ def main_menu():
         elif option == "3":
             monitors = db.fetch_monitors(True)
             for monitor in monitors:
-                print(f"Name: {monitor['name']}. Last known price: {monitor['last_extracted_value']['current']}. Threshold: {monitor['threshold_value']}")
+                last_extracted_value = json.loads(monitor['last_extracted_value'])
+                print(f"Name: {monitor['name']}. Last known price: {last_extracted_value['current']}. Threshold: {monitor['threshold_value']}")
                 print("-"*30)
                
 
         elif option == "4":
             create_report()
-
+            
         elif option == "5":
+            print("Check selector!")
+            url = input("URL: ")
+            css_selector = input("CSS Selector: ")
+            data = {
+                "xpath" : None,
+                "css_selector" : css_selector
+            }
+            
+            res = parse(url, data)
+            print("-"*30)
+            print("Following respons was returned")
+            print(res)
+            
+        elif option == "6":
             return
 
         else:

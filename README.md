@@ -546,9 +546,12 @@ mcyfee/
 │
 ├── tests/                              # Test suite
 │   ├── __init__.py
-│   ├── test_parser.py
 │   ├── test_database.py
-│   └── test_notifications.py
+│   ├── test_parser.py
+│   ├── test_performance.py
+│   ├── test_report_generator.py
+│   ├── test_scraper.py
+│   └── test_tracker.py
 │
 ├── scripts/                            # Utility scripts
 │   ├── setup_db.sql                    # Database schema

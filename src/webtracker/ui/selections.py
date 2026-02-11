@@ -151,14 +151,15 @@ def create_report(monitor_id : int = None, days : int = 30):
     print("1. Check monitor ids")
     print("2. Generate report")
     print("3. Return")
-    selection = input("Option: ")
+
     
     while True:
+        selection = input("Option: ")
         if selection == "1":
             monitors = db.fetch_all_monitors()
             for monitor in monitors:
                 print(f"id: {monitor['id']}. Name: {monitor['name']}")
-        if selection == "2":   
+        elif selection == "2":   
             print("Generate report")
             monitor_id = input("Monitor ID:")
             days = input("Number of days to include: ")
@@ -170,6 +171,8 @@ def create_report(monitor_id : int = None, days : int = 30):
             report_generator.create_chart(values.monitor_id, values.days)
             print("Report has been created!")
             return 
-        if selection == "3":
+        elif selection == "3":
             return
+        else:
+            print("Invalid input")
 

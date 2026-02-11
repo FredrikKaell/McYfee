@@ -22,7 +22,7 @@ MOCK_MONITOR_ROW = {
 @patch('webtracker.utils.performance.db.save_performance_record') # Don't save real performance record
 @patch('webtracker.notifications.discord_notifier.DiscordNotifier')   # Do not send real notification
 @patch('webtracker.scraper.parser.parse')               # Don't fetch real webpage
-@patch('webtracker.database.database')                  # Do not not create db record
+@patch('webtracker.core.tracker.db')                  # Do not not create db record
 def test_full_flow_price_below_threshold(mock_db, mock_parse, mock_discord, mock_perf):
     # Test flow. Parse > Extract price > Compare > Trigger
     mock_parse.return_value = "34995 kr"
@@ -40,7 +40,7 @@ def test_full_flow_price_below_threshold(mock_db, mock_parse, mock_discord, mock
 @patch('webtracker.utils.performance.db.save_performance_record')
 @patch('webtracker.notifications.discord_notifier.DiscordNotifier')
 @patch('webtracker.scraper.parser.parse')
-@patch('webtracker.database.database')
+@patch('webtracker.core.tracker.db')
 def test_full_flow_price_above_threshold(mock_db, mock_parse, mock_discord, mock_perf):
     # Simulate return value above threshold
     mock_parse.return_value = "44995 kr"

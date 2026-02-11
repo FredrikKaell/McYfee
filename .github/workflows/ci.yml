@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [ "main", "DEV" ]
   push:
-    branches: [ "main", "DEV" ]
+    branches: [ "main", "DEV", "staging"]
 
 jobs:
   test:
@@ -36,7 +36,7 @@ jobs:
           else
             python -m pip install pytest flake8 pytest-cov
           fi
-          
+
       - name: Flake8 (fail only fail on critical issus)
         run: |
           flake8 . \

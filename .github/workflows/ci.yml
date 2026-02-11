@@ -1,0 +1,75 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [ "main", "DEV" ]
+  push:
+    branches: [ "main", "DEV", "staging"]
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Lint & Test (Python ${{ matrix.python-version }} on ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        python-version: [ "3.10", "3.11", "3.12" ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f pyproject.toml ]; then
+            python -m pip install .[dev]
+          elif [ -f requirements_ci.txt ]; then
+            python -m pip install -r requirements_ci.txt
+          else
+            python -m pip install pytest flake8 pytest-cov
+          fi
+
+      - name: Flake8 (fail only fail on critical issus)
+        run: |
+          flake8 . \
+          --exclude=.venv,__pycache__,.env,.resources \
+          --select=E9,F63,F7,F82 \
+          --max-line-length=200 \
+          --count \
+          --show-source \
+          --statistics
+
+      
+      - name: Create .env for tests
+        run: |
+          cat > .env << 'EOF'
+          DB_HOST=${{ secrets.DB_HOST }}
+          DB_PORT=${{ secrets.DB_PORT }}
+          DB_USER=${{ secrets.DB_USER }}
+          DB_PASS=${{ secrets.DB_PASS }}
+          DB_NAME=${{ secrets.DB_NAME }}
+          EOF
+
+
+      - name: Pytest (with coverage)
+        run: |
+          pytest -q -m "not skip_in_ci" --cov=. --cov-report=html --cov-report=term-missing
+      
+      - name: Upload coverage XML
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-html-${{ runner.os }}-py${{ matrix.python-version }}-${{ github.job }}-run${{ github.run_attempt }}
+          path: htmlcov/
+          if-no-files-found: warn
+          compression-level: 6
+          overwrite: false

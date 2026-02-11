@@ -62,14 +62,14 @@ jobs:
 
       - name: Pytest (with coverage)
         run: |
-          pytest -q -m "not skip_in_ci" --cov=. --cov-report=xml --cov-report=term-missing
+          pytest -q -m "not skip_in_ci" --cov=. --cov-report=html --cov-report=term-missing
       
       - name: Upload coverage XML
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: coverage-xml-${{ runner.os }}-py${{ matrix.python-version }}-${{ github.job }}-run${{ github.run_attempt }}
-          path: coverage.xml
+          name: coverage-html-${{ runner.os }}-py${{ matrix.python-version }}-${{ github.job }}-run${{ github.run_attempt }}
+          path: htmlcov/
           if-no-files-found: warn
           compression-level: 6
           overwrite: false

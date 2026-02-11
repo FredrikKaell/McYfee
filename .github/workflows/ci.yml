@@ -48,6 +48,18 @@ jobs:
           --show-source \
           --statistics
 
+      
+      - name: Create .env for tests
+        run: |
+          cat > .env << 'EOF'
+          DB_HOST=${{ secrets.DB_HOST }}
+          DB_PORT=${{ secrets.DB_PORT }}
+          DB_USER=${{ secrets.DB_USER }}
+          DB_PASS=${{ secrets.DB_PASS }}
+          DB_NAME=${{ secrets.DB_NAME }}
+          EOF
+
+
       - name: Pytest (with coverage)
         run: |
           pytest -q -m "not skip_in_ci" --cov=. --cov-report=xml --cov-report=term-missing

@@ -7,19 +7,19 @@ from webtracker.core.tracker import worker_function
 MOCK_MONITOR_ROW = {
     'id': 1,
     'name': 'Test Monitor',
-    'url': 'https://www.example.com',
+    'url': 'https://www.aftonbladet.se',
     'css_selector': '.price',
     'xpath':None,
     'threshold_value': 40000,
     'check_interval': 60,
     'last_extracted_value': None,
     'notification_type': 'discord',
-    'notification_config': '{"webhook": "https://discord.com/api/webhooks/test"}'
+    'notification_config': '{"webhook": "https://discord.com/api/webhooks/12345"}'
 }
 
 
 
-@patch('webtracker.utils.performance.db.save_performance_record')
+@patch('webtracker.utils.performance.db.save_performance_record') # Don't save real performance record
 @patch('webtracker.core.tracker.send_notification')   # Do not send real notification
 @patch('webtracker.scraper.parser.parse')               # Don't fetch real webpage
 @patch('webtracker.core.tracker.db')                  # Do not not create db record

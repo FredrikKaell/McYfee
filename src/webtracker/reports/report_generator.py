@@ -138,6 +138,7 @@ def create_chart(monitor_id: int = None, days: int = 30):
         plt.close()
 
         print(f"Saved: {filepath}")
+        return str(filepath)
 
     except Exception as err:
         log.error(f"Error: {err}")

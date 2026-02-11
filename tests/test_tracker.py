@@ -1,5 +1,5 @@
 import pytest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 from webtracker.core.tracker import worker_function
 
 
@@ -31,14 +31,11 @@ def test_full_flow_price_below_threshold(mock_db, mock_parse, mock_discord, mock
     mock_db.update_monitor_values.return_value = True
     mock_db.set_monitor_status.return_value = 1
 
-    mock_discord_instance = MagicMock()
-    mock_discord.return_value = mock_discord_instance
-
     worker_function(MOCK_MONITOR_ROW)
 
     # Notification should trigger. Under 40000
     mock_discord.assert_called_once()
-    mock_discord_instance.send.assert_called_once()
+    mock_discord.return_value.send.assert_called_once()
 
 @patch('webtracker.utils.performance.db.save_performance_record')
 @patch('webtracker.notifications.discord_notifier.DiscordNotifier')

@@ -35,6 +35,9 @@ POLL_RATE = 60
 # This determines how many iterations before the performance report gets refreshed
 REFRESH_PERFORMANCE_REPORT = 10
 
+# Set the tracker to run as daemon or not, looping vs running one time.
+DAEMON = True
+
 
 # === TEXT COLORS ===
 class colors:

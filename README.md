@@ -541,7 +541,7 @@ mcyfee/
 │       └── utils/                      # Utility modules
 │           ├── __init__.py
 │           ├── logger.py               # Logging setup
-│           ├── inputvalidation.py      # User input validation
+│           ├── input_validatior.py      # User input validation
 │           └── performance.py          # Performance measurement
 │
 ├── tests/                              # Test suite
@@ -573,7 +573,7 @@ mcyfee/
 | `discord_notifier.py` | Discord webhook integration |
 | `report_generator.py` | Statistics generation and visualization (Seaborn) |
 | `logger.py` | Centralized logging configuration |
-| `input_validation.py` | Validation for all user input to database |
+| `input_validatior.py` | Validation for all user input to database |
 | `performance.py` | Performance measurement |
 
 ---

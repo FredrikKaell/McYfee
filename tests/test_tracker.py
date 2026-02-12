@@ -18,18 +18,28 @@ MOCK_MONITOR_ROW = {
 }
 
 
-
-@patch('webtracker.utils.performance.db.save_performance_record') # Don't save real performance record
-@patch('webtracker.notifications.discord_notifier.DiscordNotifier')   # Do not send real notification
-@patch('webtracker.scraper.parser.parse')               # Don't fetch real webpage
-@patch('webtracker.database.database')                  # Do not not create db record
-def test_full_flow_price_below_threshold(mock_db, mock_parse, mock_discord, mock_perf):
+@patch('webtracker.database.database.update_monitor_last_check')
+@patch('webtracker.database.database.set_monitor_status')
+@patch('webtracker.database.database.create_snapshot')
+@patch('webtracker.database.database.update_monitor_values')
+@patch('webtracker.utils.performance.db.save_performance_record')
+@patch('webtracker.notifications.discord_notifier.DiscordNotifier')
+@patch('webtracker.scraper.parser.parse')
+def test_full_flow_price_below_threshold(
+    mock_parse,
+    mock_discord,
+    mock_perf,
+    mock_update_values,
+    mock_create_snap,
+    mock_set_status,
+    mock_last_check
+):
     # Test flow. Parse > Extract price > Compare > Trigger
     mock_parse.return_value = "34995 kr"
-    mock_db.update_monitor_last_check.return_value = True
-    mock_db.create_snapshot.return_value = 1
-    mock_db.update_monitor_values.return_value = True
-    mock_db.set_monitor_status.return_value = 1
+    mock_update_values.return_value = True
+    mock_create_snap.return_value = 1
+    mock_set_status.return_value = 1
+    mock_last_check.return_value = 1
 
     worker_function(MOCK_MONITOR_ROW)
 
@@ -37,19 +47,28 @@ def test_full_flow_price_below_threshold(mock_db, mock_parse, mock_discord, mock
     mock_discord.assert_called_once()
     mock_discord.return_value.send.assert_called_once()
 
+
+@patch('webtracker.database.database.update_monitor_last_check')
+@patch('webtracker.database.database.create_snapshot')
+@patch('webtracker.database.database.update_monitor_values')
 @patch('webtracker.utils.performance.db.save_performance_record')
 @patch('webtracker.notifications.discord_notifier.DiscordNotifier')
 @patch('webtracker.scraper.parser.parse')
-@patch('webtracker.database.database')
-def test_full_flow_price_above_threshold(mock_db, mock_parse, mock_discord, mock_perf):
+def test_full_flow_price_above_threshold(
+    mock_parse,
+    mock_discord,
+    mock_perf,
+    mock_update_values,
+    mock_create_snap,
+    mock_last_check
+):
     # Simulate return value above threshold
     mock_parse.return_value = "44995 kr"
-    mock_db.update_monitor_last_check.return_value = True
-    mock_db.create_snapshot.return_value = 1
-    mock_db.update_monitor_values.return_value = True
+    mock_update_values.return_value = True
+    mock_create_snap.return_value = 1
+    mock_last_check.return_value = 1
 
     worker_function(MOCK_MONITOR_ROW)
 
     # Notification should not send, over 40000
     mock_discord.assert_not_called()
-
